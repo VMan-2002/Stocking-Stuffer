@@ -6,6 +6,7 @@ return {
             stocking_stuffer_gift_tag = 'From ',
             stocking_stuffer_to_jokers = 'Show Jokers',
             stocking_stuffer_to_presents = 'Show Presents',
+            stocking_stuffer_present_count = 'Presents: '
         }
     },
     descriptions = {

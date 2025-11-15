@@ -32,8 +32,14 @@ pattern = '''
 self.children.area_uibox = UIBox{
 '''
 payload = '''
-if card_count and self == G.stocking_present then card_count.nodes = {{n=G.UIT.B, config={w = 0.1,h=0.25}}} end
-
+if card_count and self == G.stocking_present then 
+    card_count = {n=G.UIT.R, config={align = 'cl', padding = 0.03, no_fill = true}, nodes={
+        {n=G.UIT.B, config={w = 0.1,h=0.1}},
+        {n=G.UIT.T, config={text = localize('stocking_stuffer_present_count'), scale = 0.3, colour = G.C.WHITE}},
+        {n=G.UIT.T, config={ref_table = self.config, ref_value = 'card_count', scale = 0.3, colour = G.C.WHITE}},
+        {n=G.UIT.B, config={w = 0.1,h=0.1}}
+    }}
+end
 '''
 
 # Stop drawing
@@ -153,5 +159,24 @@ payload = '''
 if (card.area == G.jokers and StockingStuffer.states.slot_visible ~= 1) or (card.area == G.stocking_present and StockingStuffer.states.slot_visible ~= -1) then
     StockingStuffer.states.toggled = true
     G.FUNCS.toggle_jokers_presents()
+end
+'''
+
+# comment
+[[patches]]
+[patches.pattern]
+target = 'game.lua'
+match_indent = true
+position = 'after'
+pattern = '''
+G.playing_cards = {}
+
+set_screen_positions()
+'''
+payload = '''
+ for _, mod in ipairs(SMODS.mod_list) do
+    if mod.can_load and mod.custom_card_areas and type(mod.custom_card_areas) == "function" then
+        mod.custom_card_areas(self)
+    end
 end
 '''

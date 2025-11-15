@@ -27,7 +27,6 @@ local PresentDefaults = {
             G.localization.descriptions.stocking_present[self.key] or
             G.localization.descriptions.stocking_present.default_text)
     end,
-    -- select_card = TODO: make this display OPEN on the button,
     can_use = function(self, card)
         return true
     end,
@@ -113,6 +112,14 @@ SMODS.Atlas({
     py = 95
 })
 
+SMODS.Atlas({
+    key = 'sack',
+    path = 'sack.png',
+    px = 71,
+    py = 95
+})
+
+
 -- TODO: Get proper art
 SMODS.Atlas({
     key = 'christmas_tree',
@@ -131,13 +138,9 @@ SMODS.ConsumableType({
     default = 'c_stocking_test_1'
 })
 
--- TODO: Give empty sprite
--- TODO: Remove particles
--- TODO: Christmas Tree in palce of G.HUD
 SMODS.Booster({
     key = 'stocking_present_select',
-    -- pos = {x=0, y=1},
-    atlas = 'presents',
+    atlas = 'sack',
     config = { choose = 1, extra = 3 },
     ease_background_colour = function(self)
         ease_colour(G.C.DYN_UI.MAIN, G.C.GREEN)
@@ -200,27 +203,24 @@ function G.UIDEF.card_h_popup(card)
     return ret_val
 end
 
-local stocking_stuffer_start_run = Game.start_run
-function Game:start_run(args)
-    stocking_stuffer_start_run(self, args)
-    self.gift = CardArea(
-        self.play.T.x, self.play.T.y,
+StockingStuffer.custom_card_areas = function(game)
+    game.gift = CardArea(
+        game.play.T.x, game.play.T.y,
         5.3 * G.CARD_W, 0.95 * G.CARD_H,
         { card_limit = 1, type = 'play' }
     )
-
-    self.stocking_present = CardArea(
-        self.jokers.T.x, self.jokers.T.y - 4,
-        self.jokers.T.w, self.jokers.T.h,
-        -- TODO: make this card_limit dynamically grow when cards are added
-        { card_limit = 100, type = 'stocking_stuffer_hide', highlight_limit = 1 }
+    
+    game.stocking_present = CardArea(
+        game.jokers.T.x, game.jokers.T.y - 4,
+        game.jokers.T.w, game.jokers.T.h,
+        { card_limit = 1, type = 'stocking_stuffer_hide', highlight_limit = 1 }
     )
-
-    self.christmas_tree = UIBox{
+    
+    game.christmas_tree = UIBox{
         definition = create_tree_hud(),
         config = {align=('cl'), offset = {x=-7,y=0},major = G.ROOM_ATTACH}
     }
-
+    
     StockingStuffer.states.slot_visible = 1
     StockingStuffer.animate_areas()
 end
@@ -273,6 +273,7 @@ end
 
 local stocking_stuffer_card_area_emplace = CardArea.emplace
 function CardArea:emplace(card, location, stay_flipped)
+    if self == G.stocking_present then self:change_size(1) end
     if (self == G.jokers and StockingStuffer.states.slot_visible ~= 1) or (self == G.stocking_present and StockingStuffer.states.slot_visible ~= -1) then
         G.FUNCS.toggle_jokers_presents()
         G.E_MANAGER:add_event(Event({
@@ -380,9 +381,10 @@ function G.UIDEF.use_and_sell_buttons(card)
         {n=G.UIT.ROOT, config = {padding = 0, colour = G.C.CLEAR}, nodes={
                 {n=G.UIT.R, config={mid = true}, nodes={
             }},
-            {n=G.UIT.R, config={ref_table = card, r = 0.08, padding = 0.1, align = "bm", minw = 0.5*card.T.w - 0.15, minh = 0.35*card.T.h, maxw = 0.7*card.T.w - 0.15, hover = true, shadow = true, colour = card.config.center.dev_colour, one_press = true, button = 'use_card'}, nodes={
+            {n=G.UIT.R, config={ref_table = card, r = 0.08, padding = 0.1, align = "bm", minw = 0.5*card.T.w - 0.15, minh = 0.65*card.T.h, maxw = 0.7*card.T.w - 0.15, hover = true, shadow = true, colour = card.config.center.dev_colour, one_press = true, button = 'use_card'}, nodes={
                 {n=G.UIT.T, config={text = localize('b_open'),colour = G.C.UI.TEXT_LIGHT, scale = 0.35, shadow = true}}
             }},
+            {n=G.UIT.R, config = {minh = 0.1*card.T.h}}
         }}
     end
     return buttons(card)
