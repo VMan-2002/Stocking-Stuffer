@@ -1,3 +1,7 @@
+-- This localization file is reserved for the base mod.
+-- You can create a lua file in one of the language folders
+-- in the localization folder for your content only.
+
 return {
     misc = {
         dictionary = {

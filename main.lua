@@ -384,7 +384,7 @@ end
 --#region Functions
 
 -- Creates the HUD for the Christmas Tree UIBox Object
-function create_tree_hud() 
+function create_tree_hud()
     local tree_sprite = AnimatedSprite(0, 0, 7, 12, G.ANIMATION_ATLAS.stocking_christmas_tree)
 
     return {n=G.UIT.ROOT, config = {align = "cm", padding = 0.03, colour = G.C.CLEAR}, nodes={
@@ -617,5 +617,71 @@ local function load_files(path)
 end
 local path = SMODS.current_mod.path .. '/content'
 load_files(path)
+
+--#endregion
+
+--#region Localization Folder Loading
+-- This is resposible for loading localization from folder in localization
+-- This assumes the follwing:
+-- - These files do not replace other localization strings (or if they do they have more lines)
+-- - JSON files are not used (only lua)
+-- - There are not nested localization files (it probably wouldn't be hard if you really wanted them)
+
+local function mergeTables(dest, source)
+    if dest == nil then return source end
+    for k,v in pairs(source) do
+        if dest[k] == nil then
+            dest[k] = v
+        else
+            if type(v) ~= "table" or type(dest[k]) ~= "table" then
+                dest[k] = v
+            else
+                dest[k] = mergeTables(dest[k], v)
+            end
+        end
+    end
+    return dest
+end
+
+local function loadLang(path)
+    local files = nativefs.getDirectoryItemsInfo(path)
+    local ret = nil
+    for _, v in ipairs(files) do
+        if v.type == "file" then
+            local loc_table = assert(loadstring(nativefs.read(path .. v.name), ('=[SMODS %s "%s"]'):format(StockingStuffer.id, string.match(v.name, '[^/]+/[^/]+$'))))()
+            ret = mergeTables(ret, loc_table)
+        end
+    end
+    return ret
+end
+
+local function processLoc()
+    local locPath = StockingStuffer.path .. "localization/"
+    local info = nativefs.getDirectoryItemsInfo(locPath)
+    table.sort(info, function(a, b)
+        return a.name < b.name
+    end)
+    local ret = {}
+    for _, v in ipairs(info) do
+        if v.type == "directory" then
+            ret[v.name] = loadLang(locPath .. v.name .. "/")
+        end
+    end
+    return ret
+end
+
+local function injectLoc(loc)
+    if not loc then return end
+    mergeTables(G.localization, loc)
+end
+
+function StockingStuffer.process_loc_text()
+    local txt = processLoc()
+
+    injectLoc(txt['en-us'])
+    injectLoc(txt['default'])
+    injectLoc(txt[G.SETTINGS.language])
+    injectLoc(txt[G.SETTINGS.real_language])
+end
 
 --#endregion
