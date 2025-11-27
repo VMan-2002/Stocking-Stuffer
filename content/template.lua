@@ -45,7 +45,7 @@ StockingStuffer.WrappedPresent({
 })
 
 -- Present Template - Replace 'template' with your name
--- Note: You should make 5 Presents to fill your Present!
+-- Note: You should make up to 5 Presents to fill your Wrapped Present!
 StockingStuffer.Present({
     developer = display_name, -- DO NOT CHANGE
 
@@ -77,6 +77,8 @@ StockingStuffer.Present({
     -- calculate is completely optional, delete if your present does not need it
     calculate = function(self, card, context)
         -- check context and return appropriate values
+        -- StockingStuffer.first_calculation is true before jokers are calculated
+        -- StockingStuffer.second_calculation is true after jokers are calculated
         if context.joker_main then
             return {
                 message = 'example'

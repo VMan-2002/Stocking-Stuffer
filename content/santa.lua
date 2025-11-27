@@ -43,14 +43,15 @@ StockingStuffer.Present({
 
     loc_vars = function(self, info_queue, card)
         return {
-            vars = { card.ability.extra },
+            vars = { card.ability.extra, card.ability.extra * 10 },
         }
     end,
 
     calculate = function(self, card, context)
         if context.joker_main then
             return {
-                mult = card.ability.extra,
+                mult = StockingStuffer.first_calculation and card.ability.extra,
+                chips = StockingStuffer.second_calculation and card.ability.extra * 10
             }
         end
     end
