@@ -22,11 +22,8 @@ StockingStuffer.current_present_order = "before"
     end
     --#endregion
 
-    --#region Present
-    StockingStuffer.WrappedPresent = SMODS.Consumable:extend()
-
-    -- This table contains values that all presents should have. They can be overriden for custom behaviours if necessary.
-    local PresentDefaults = {
+    --#region WrappedPresent
+    StockingStuffer.WrappedPresent = SMODS.Consumable:extend({
         required_params = {
             'key',
             'developer'
@@ -122,21 +119,13 @@ StockingStuffer.current_present_order = "before"
                 end
             }))
         end
-    }
-
-    -- Set defaults for all Present objects
-    for k, v in pairs(PresentDefaults) do
-        StockingStuffer.WrappedPresent[k] = v
-    end
+    })
 
     --#endregion
 
     --#region Present
 
-    StockingStuffer.Present = SMODS.Consumable:extend()
-
-    -- This table contains values that all Presents should have. They can be overriden for custom behaviours if necessary.
-    local PresentDefaults = {
+    StockingStuffer.Present = SMODS.Consumable:extend({
         required_params = {
             'key',
             'developer',
@@ -168,12 +157,7 @@ StockingStuffer.current_present_order = "before"
         loc_vars = function(self, info_queue, card)
             return {vars = {self.key}}
         end
-    }
-
-    -- Set defaults for all Present objects
-    for k, v in pairs(PresentDefaults) do
-        StockingStuffer.Present[k] = v
-    end
+    })
 
     -- Present ConsumableType init
     SMODS.ConsumableType({
@@ -202,9 +186,20 @@ StockingStuffer.current_present_order = "before"
                     table.insert(pool, G.P_CENTERS.j_stocking_dummy)
                 end
             end
-            return SMODS.card_collection_UIBox(pool, self.collection_rows, { back_func = #type_buf>3 and 'your_collection_consumables' or nil, show_no_collection = true})
+            return SMODS.card_collection_UIBox(pool, self.collection_rows, { back_func = #type_buf>3 and 'your_collection_consumables' or nil, show_no_collection = true,
+                modify_card = function(card) card.collection_present = true end})
         end,
     })
+
+    local CAsetranks = CardArea.set_ranks
+    function CardArea:set_ranks()
+        CAsetranks(self)
+        for _, card in pairs(self.cards) do
+            if card.collection_present then
+                card.states.drag.can = false
+            end
+        end
+    end
 
     --#endregion
 
