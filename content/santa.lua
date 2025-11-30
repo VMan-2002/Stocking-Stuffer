@@ -95,6 +95,44 @@ StockingStuffer.Present({
     use = function(self, card)
         card.ability.extra.ready = false
         SMODS.change_free_rerolls(1)
+        G.E_MANAGER:add_event(Event({
+            trigger = 'immediate',
+            func = function()
+                for i = #G.shop_vouchers.cards,1, -1 do
+                    local c = G.shop_vouchers:remove_card(G.shop_vouchers.cards[i])
+                    c:remove()
+                    c = nil
+                end
+                for i = #G.shop_booster.cards,1, -1 do
+                    local c = G.shop_booster:remove_card(G.shop_booster.cards[i])
+                    c:remove()
+                    c = nil
+                end
+
+                G.GAME.current_round.used_packs = {}
+                for i=1, G.GAME.starting_params.boosters_in_shop + (G.GAME.modifiers.extra_boosters or 0) do
+                    if not G.GAME.current_round.used_packs[i] then
+                        G.GAME.current_round.used_packs[i] = get_pack('shop_pack').key
+                    end
+
+                    local card = Card(G.shop_booster.T.x + G.shop_booster.T.w/2,
+                    G.shop_booster.T.y, G.CARD_W*1.27, G.CARD_H*1.27, G.P_CARDS.empty, G.P_CENTERS[G.GAME.current_round.used_packs[i]], {bypass_discovery_center = true, bypass_discovery_ui = true})
+                    create_shop_card_ui(card, 'Booster', G.shop_booster)
+                    card.ability.booster_pos = i
+                    card:start_materialize()
+                    G.shop_booster:emplace(card)
+                end
+                local vouchers_to_spawn = 0
+                G.GAME.current_round.voucher = SMODS.get_next_vouchers()
+                for _,_ in pairs(G.GAME.current_round.voucher.spawn) do vouchers_to_spawn = vouchers_to_spawn + 1 end
+                for _, key in ipairs(G.GAME.current_round.voucher or {}) do
+                    if G.P_CENTERS[key] and G.GAME.current_round.voucher.spawn[key] then
+                        SMODS.add_voucher_to_shop(key)
+                    end
+                end
+                return true
+            end
+        }))
         G.FUNCS.reroll_shop()
         G.E_MANAGER:add_event(Event({
             trigger = 'immediate',
