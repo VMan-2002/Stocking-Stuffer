@@ -227,6 +227,7 @@ StockingStuffer.colours = {
         create_card = function(self, card, i)
             return create_card('stocking_wrapped_present', G.pack_cards, nil, nil, true, true, nil, "stocking_present")
         end,
+        no_collection = true,
         in_pool = function() return false end
     })
 
