@@ -104,3 +104,31 @@ StockingStuffer.Present({
         end
     end
 })
+
+local game_upd8_hook = Game.update
+function Game:update(dt, ...)
+    game_upd8_hook(self, dt, ...)
+    if G and G.stocking_present and G.stocking_present.cards then
+        local c_area = G.stocking_present.cards
+        for k, v in ipairs(c_area) do
+            if c_area[k + 1] and c_area[k + 1].config.center.key == "[REDACTED]Autumn_stocking_discard_bin" then
+                SMODS.debuff_card(v, true, "discard_bin")
+            else
+                SMODS.debuff_card(v, false, "discard_bin")
+            end
+        end
+    end
+end
+StockingStuffer.Present({
+    developer = display_name,
+    key = 'discard_bin',
+    pos = { x = 3, y = 0 },
+    use = function(self, card)
+    end,
+    keep_on_use = function()
+        return false
+    end,
+    can_use = function(self, card)
+        return true
+    end,
+})

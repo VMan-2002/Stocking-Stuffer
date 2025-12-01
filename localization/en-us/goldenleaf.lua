@@ -7,6 +7,15 @@ return {
     },
     descriptions = {
         stocking_present = {
+            ["[REDACTED]Autumn_stocking_discard_bin"] = {
+                name = 'Discard Bin',
+                text = {
+                    "{C:attention}Debuff",
+                    "the present",
+                    "to the left",
+                    "{C:inactive,s:0.8}(Use to remove this present)"
+                }
+            },
             ["[REDACTED]Autumn_stocking_ultimatum"] = {
                 name = 'Ultimatum',
                 text = {
