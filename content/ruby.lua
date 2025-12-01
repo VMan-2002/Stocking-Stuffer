@@ -1,0 +1,338 @@
+local display_name = 'Ruby'
+
+SMODS.Atlas({
+    key = display_name..'_presents',
+    path = 'ruby_presents.png',
+    px = 71,
+    py = 95
+})
+
+local RUBY_GRADIENT = SMODS.Gradient {
+    key = "ruby_gradient",
+    colours = {
+        HEX("FF0000"),
+        HEX("FF00E8")
+    }
+}
+
+StockingStuffer.Developer({
+    name = display_name,
+    colour = RUBY_GRADIENT
+})
+
+-- Wrapped Present
+StockingStuffer.WrappedPresent({
+    developer = display_name,
+
+    pos = { x = 0, y = 0 },
+
+    -- Your present will be given an automatically generated name and description. If you want to customise it you can, though we recommend keeping the {V:1} in the name
+    -- You are encouraged to use the localization file for your name and description, this is here as an example
+    -- loc_txt = {
+    --     name = '{V:1}Present',
+    --     text = {
+    --         '  {C:inactive}What could be inside?  ',
+    --         '{C:inactive}Open me to find out!'
+    --     }
+    -- },
+})
+
+-- Present
+StockingStuffer.Present({
+    developer = display_name,
+
+    key = 'gift_card',
+    pos = { x = 1, y = 0 },
+
+    config = { extra = {ready = true} },
+
+    can_use = function(self, card)
+        return G.STATE == G.STATES.SHOP and card.ability.extra.ready
+    end,
+    use = function(self, card, area, copier) 
+        card.ability.extra.ready = nil
+    end,
+    keep_on_use = function(self, card)
+        return true
+    end,    
+    calculate = function(self, card, context)
+        if context.starting_shop and StockingStuffer.first_calculation then
+            card.ability.extra.ready = true
+            return {
+                message = 'Ready!'
+            }
+        end
+    end
+})
+
+
+StockingStuffer.Present({
+    developer = display_name,
+
+    key = 'bag_of_gems',
+    pos = { x = 2, y = 0 },
+
+    config = { extra = {perma_mult = 1, bonus = 5, perma_x_mult = 0.025, perma_x_chips = 0.025} },
+  
+    calculate = function(self, card, context)
+        if context.before and StockingStuffer.first_calculation then
+            for i, v in pairs(G.play.cards) do
+                local res = pseudorandom_element({"perma_mult", "perma_x_mult", "bonus", "perma_x_chips"})
+                v.ability[res] = (v.ability[res] or 0) + card.ability.extra[res]
+                card_eval_status_text(
+					v,
+					"extra",
+					nil,
+					nil,
+					nil,
+					{ message = localize("k_upgrade_ex") }
+				)
+            end
+        end
+    end,
+    loc_vars = function(self, q, card)
+        return {
+            vars = {
+                card.ability.extra.perma_mult,
+                card.ability.extra.bonus,
+                card.ability.extra.perma_x_mult,
+                card.ability.extra.perma_x_chips
+            }
+        }
+    end
+})
+
+
+StockingStuffer.Present({
+    developer = display_name,
+
+    key = 'fuzzy_dice',
+    pos = { x = 3, y = 0 },
+
+    config = { extra = { prob_mod = 1, prob_mod_mod = 0.1 } },
+  
+    calculate = function(self, card, context)
+        if context.individual and context.cardarea == G.play and StockingStuffer.first_calculation then
+            SMODS.scale_card(card, {
+                ref_table = card.ability.extra,
+                ref_value = "prob_mod",
+                scalar_value = "prob_mod_mod"
+            })
+        end
+        if context.after then
+            G.E_MANAGER:add_event(Event{
+                func = function()
+                    card.ability.extra.prob_mod = 1
+                    return true
+                end
+            })
+        end
+        if context.mod_probability then
+            return {
+                numerator = context.numerator * card.ability.extra.prob_mod
+            }
+        end
+    end,
+    loc_vars = function(self, q, card)
+        return {
+            vars = {
+                card.ability.extra.prob_mod,
+                card.ability.extra.prob_mod_mod
+            }
+        }
+    end
+})
+
+StockingStuffer.Ruby = {}
+
+--stolen from entropy
+StockingStuffer.Ruby.get_dummy = function(center, area, self)
+    local abil = copy_table(center.config) or {}
+    abil.consumeable = copy_table(abil)
+    abil.name = center.name or center.key
+    abil.set = "Joker"
+    abil.t_mult = abil.t_mult or 0
+    abil.t_chips = abil.t_chips or 0
+    abil.x_mult = abil.x_mult or abil.Xmult or 1
+    abil.extra_value = abil.extra_value or 0
+    abil.d_size = abil.d_size or 0
+    abil.mult = abil.mult or 0
+    abil.effect = center.effect
+    abil.h_size = abil.h_size or 0
+    local eligible_editionless_jokers = {}
+    for i, v in pairs(G.jokers and G.jokers.cards or {}) do
+        if not v.edition then
+            eligible_editionless_jokers[#eligible_editionless_jokers+1] = v
+        end
+    end
+    local tbl = {
+        ability = abil,
+        config = {
+            center = center,
+            center_key = center.key
+        },
+        juice_up = function(_, ...)
+            return self:juice_up(...)
+        end,
+        start_dissolve = function(_, ...)
+            return self:start_dissolve(...)
+        end,
+        remove = function(_, ...)
+            return self:remove(...)
+        end,
+        flip = function(_, ...)
+            return self:flip(...)
+        end,
+        use_consumeable = function(self, ...)
+            self.bypass_echo = true
+            local ret = Card.use_consumeable(self, ...)
+            self.bypass_echo = nil
+        end,
+        can_use_consumeable = function(self, ...)
+            return Card.can_use_consumeable(self, ...)
+        end,
+        calculate_joker = function(self, ...)
+            return Card.calculate_joker(self, ...)
+        end,
+        can_calculate = function(self, ...)
+            return Card.can_calculate(self, ...)
+        end,
+        original_card = self,
+        area = area,
+        added_to_deck = added_to_deck,
+        cost = self.cost,
+        sell_cost = self.sell_cost,
+        eligible_strength_jokers = eligible_editionless_jokers,
+        eligible_editionless_jokers = eligible_editionless_jokers,
+        T = self.t,
+        VT = self.VT
+    }
+    for i, v in pairs(self) do
+        if type(v) == "function" and i ~= "flip_side" then
+            tbl[i] = function(_, ...)
+                return v(self, ...)
+            end
+        end
+    end
+    return tbl
+end
+
+local function get_random_joker(key_append)
+    local _type = "Joker"
+    local _pool, _pool_key = get_current_pool(_type, nil, nil, key_append)
+    center = pseudorandom_element(_pool, pseudoseed(_pool_key))
+    local it = 1
+    local blacklist = {
+        j_stencil = true, --weird behaviour with low mult
+        j_egg = true, --idk why but i just couldnt fix this
+        j_invisible = true, --requires more than 1 round
+        j_todo_list = true, --more like togay list
+        j_riff_raff = true, --weird TODO: fix
+        j_luchador --needs to be sold
+    }
+    while center == 'UNAVAILABLE' or blacklist[center] do --some cards just dont work
+        it = it + 1
+        center = pseudorandom_element(_pool, pseudoseed(_pool_key..'_resample'..it))
+    end
+
+    return center
+end
+
+
+
+StockingStuffer.Present({
+    developer = display_name,
+
+    key = 'merchandise',
+    pos = { x = 4, y = 0 },
+
+    config = { extra = { joker = "j_joker", dummy_added = false } },
+  
+    calculate = function(self, card, context)
+        --intentionally triggers in both
+        if context.starting_shop and StockingStuffer.second_calculation then
+            G.E_MANAGER:add_event(Event{
+                trigger = "after",
+                func = function()
+                    card.ability.extra.joker = get_random_joker("stocking_ruby_merchandise")
+                    Card.remove_from_deck(card.dummy)
+                    card.dummy = StockingStuffer.Ruby.get_dummy(G.P_CENTERS[card.ability.extra.joker], G.jokers, card)
+                    Card.add_to_deck(card.dummy)
+                    card.ability.extra.dummy_abil = card.dummy.ability
+                    card_eval_status_text(
+                        card,
+                        "extra",
+                        nil,
+                        nil,
+                        nil,
+                        { message = localize("k_switch_ex") }
+                    )
+                    return true
+                end
+            })
+        end
+        if not card.dummy then
+            card.dummy = StockingStuffer.Ruby.get_dummy(G.P_CENTERS[card.ability.extra.joker], G.jokers, card)
+            card.dummy.added_to_deck = true
+            if card.ability.extra.dummy_abil then card.dummy.ability = card.ability.extra.dummy_abil end
+        end
+        local ret = Card.calculate_joker(card.dummy, context)
+        card.ability.extra.dummy_abil = card.dummy.ability
+        return ret
+    end,
+    loc_vars = function(self, q, card)
+        return {
+            vars = {
+                localize{type = "name_text", key = card.ability.extra.joker, set = "Joker"}
+            },
+        }
+    end,
+    calc_dollar_bonus = function(self, card)
+        if card.dummy and StockingStuffer.second_calculation then
+            local ret = Card.calculate_dollar_bonus(card.dummy)
+            card.ability.extra.dummy_abil = card.dummy.ability
+            return ret
+        end
+    end
+})
+
+-- Needed for gradients to work properly with presents
+local lighten_ref = lighten
+function lighten(c, ...)
+    if c[1] then return lighten_ref(c, ...) else return c end
+end
+
+local darken_ref = darken
+function darken(c, ...)
+    if c[1] then return darken_ref(c, ...) else return c end
+end
+
+local eval_text_ref = card_eval_status_text
+function card_eval_status_text(card, ...)
+    if card and card.T then return eval_text_ref(card, ...) end
+    if card.original_card then eval_text_ref(card.original_card, ...) end
+end
+
+local localize_ref = localize
+function localize(args, ...)
+    if not args then return "ERROR" end
+    return localize_ref(args, ...)
+end
+
+local find_card_ref = SMODS.find_card
+function SMODS.find_card(key, ...)
+    local cards = find_card_ref(key, ...)
+    for i, v in pairs(G.stocking_present and G.stocking_present.cards or {}) do
+        if v.dummy and (v.dummy.config.center.key == key or v.dummy.config.center.name == key) then cards[#cards+1] = v.dummy end
+    end
+    return cards
+end
+
+local find_joker_ref = find_joker
+function find_joker(key, ...)
+    local cards = find_joker_ref(key, ...)
+    for i, v in pairs(G.stocking_present and G.stocking_present.cards or {}) do
+        if v.dummy and (v.dummy.config.center.key == key or v.dummy.config.center.name == key) then cards[#cards+1] = v.dummy end
+    end
+    return cards
+end
