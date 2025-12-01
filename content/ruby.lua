@@ -7,6 +7,16 @@ SMODS.Atlas({
     py = 95
 })
 
+
+SMODS.Atlas({
+    key = display_name..'_lavalamp',
+    path = 'ruby_lavalamp.png',
+    px = 71,
+    py = 95,
+    atlas_table = 'ANIMATION_ATLAS',
+    frames = 17
+})
+
 local RUBY_GRADIENT = SMODS.Gradient {
     key = "ruby_gradient",
     colours = {
@@ -51,6 +61,10 @@ StockingStuffer.Present({
     end,
     use = function(self, card, area, copier) 
         card.ability.extra.ready = nil
+        for i, v in pairs(G.shop_jokers.cards) do
+            v.ability.couponed = true
+            v:set_cost()
+        end
     end,
     keep_on_use = function(self, card)
         return true
@@ -119,7 +133,7 @@ StockingStuffer.Present({
                 scalar_value = "prob_mod_mod"
             })
         end
-        if context.after then
+        if context.end_of_round and not context.individual and not context.repeition and not context.blueprint then
             G.E_MANAGER:add_event(Event{
                 func = function()
                     card.ability.extra.prob_mod = 1
@@ -127,7 +141,7 @@ StockingStuffer.Present({
                 end
             })
         end
-        if context.mod_probability then
+        if context.mod_probability and StockingStuffer.first_calculation then
             return {
                 numerator = context.numerator * card.ability.extra.prob_mod
             }
@@ -294,6 +308,63 @@ StockingStuffer.Present({
             return ret
         end
     end
+})
+
+StockingStuffer.Present({
+    developer = display_name,
+
+    key = 'lavalamp',
+    atlas = "Ruby_lavalamp",
+    pos = { x = 0, y = 0 },
+
+    config = { extra = { x_mult = 1, x_mult_mod = 0.25 } },
+  
+    calculate = function(self, card, context)
+        if context.discard and StockingStuffer.first_calculation then
+            if card.ability.extra.x_mult >= 3 - card.ability.extra.x_mult_mod then
+                SMODS.destroy_cards(card)
+                return {
+                    message = localize("k_shatter_ex")
+                }
+            else    
+                SMODS.scale_card(card, {
+                    ref_table = card.ability.extra,
+                    ref_value = "x_mult",
+                    scalar_value = "x_mult_mod"
+                })
+            end
+        end
+        if context.joker_main and StockingStuffer.second_calculation then
+            return {
+                xmult = card.ability.extra.x_mult
+            }
+        end
+    end,
+    can_use = function(self, card)
+        return card.ability.extra.x_mult > 1
+    end,
+    use = function(self, card, area, copier) 
+        card.ability.extra.x_mult = 1
+        card_eval_status_text(
+            card,
+            "extra",
+            nil,
+            nil,
+            nil,
+            { message = localize("k_reset") }
+        )
+    end,
+    keep_on_use = function(self, card)
+        return true
+    end,  
+    loc_vars = function(self, q, card)
+        return {
+            vars = {
+                card.ability.extra.x_mult,
+                card.ability.extra.x_mult_mod
+            },
+        }
+    end,
 })
 
 -- Needed for gradients to work properly with presents

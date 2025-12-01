@@ -54,5 +54,5 @@ pattern = '''
 if self.ability.name ~= 'Seeing Double' and self.ability.x_mult > 1 and (self.ability.type == '' or next(context.poker_hands[self.ability.type])) then
 '''
 payload = '''
-if self.ability.name ~= 'Seeing Double' and  self.ability.x_mult and self.ability.x_mult > 1 and (self.ability.type == '' or next(context.poker_hands[self.ability.type])) then
+if self.ability.name ~= 'Seeing Double' and  self.ability.x_mult and self.ability.x_mult > 1 and (self.ability.type == '' or next(context.poker_hands[self.ability.type] or {})) then
 '''

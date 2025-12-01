@@ -2,9 +2,9 @@ return {
     descriptions = {
         stocking_present = {
             Ruby_stocking_gift_card = {
-                name = 'Gift Card',
+                name = 'Prepaid Card',
                 text = {
-                    'Shop Jokers become {C:money}free{} on use',
+                    'Shop Cards become {C:money}free{} on use',
                     '{C:inactive}Can only be used once per shop',
                     '{stocking}usable{}'
                 }
@@ -40,6 +40,27 @@ return {
                     "{C:inactive}(Currently: #1#)",
                     "{stocking}before{} & {stocking}after{}",
                 }
+            },
+            Ruby_stocking_lavalamp = {
+                name = 'Lava Lamp',
+                text = {
+                    {
+                        "This Present gains {X:mult,C:white}X#2#{}",
+                        "Mult per discarded card",
+                        "{C:inactive}(Currently {X:mult,C:white}X#1#{C:inactive} Mult)",
+                        "{stocking}before{}"
+                    },
+                    {
+                        "This Present {C:red}self destructs{} when",
+                        "reaching {X:mult,C:white}X3{} Mult",
+                        "{stocking}after"
+                    },
+                    {
+                        "Use This Present to reset",
+                        "Mult to {X:mult,C:white}X1{}",
+                        "{stocking}usable"
+                    }
+                }
             }
         },
         -- stocking_wrapped_present = {
@@ -54,7 +75,8 @@ return {
     },
     misc = {
         dictionary = {
-            k_switch_ex = "Switch!"
+            k_switch_ex = "Switch!",
+            k_shatter_ex = "Shatter!"
         }
     }
 }
