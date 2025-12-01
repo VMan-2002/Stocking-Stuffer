@@ -1,0 +1,30 @@
+{
+    "Lua.workspace.library": [
+        "C:/Users/deadb/AppData/Roaming/!Stocking Stuffer/Mods/smods",
+        "C:/Users/deadb/AppData/Roaming/!Stocking Stuffer/Mods/lovely/dump",
+        "${addons}/love2d/module/library",
+        "C:/Users/deadb/AppData/Roaming/!Stocking Stuffer/Mods/balatro-lsp"
+    ],
+    "runtime.version": "LuaJIT",
+    "runtime.special": {
+        "love.filesystem.load": "loadfile"
+    },
+    "workspace.checkThirdParty": false,
+    "diagnostics.disable": [
+        "undefined-field",
+        "missing-fields",
+        "inject-field",
+        "assign-type-mismatch",
+        "duplicate-set-field",
+        "unused-local",
+        "redundant-parameter",
+        "redundant-return-value",
+        "missing-return-value",
+        "missing-return",
+        "param-type-mismatch"
+    ],
+    "diagnostics.globals": [
+        "ease_alignment",
+        "create_tree_hud"
+    ]
+}
