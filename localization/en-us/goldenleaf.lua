@@ -1,76 +1,42 @@
 return {
     misc = {
         dictionary = {
-            santa_claus_crank = 'Cranked',
-            santa_claus_pop = 'Pop!'
+            ultimatum_grinch = 'Grinch',
+            ultimatum_saint = 'Saint'
         }
     },
     descriptions = {
         stocking_present = {
-            ["Santa Claus_stocking_snowglobe"] = {
-                name = 'Snow Globe',
+            ["[REDACTED]Autumn_stocking_ultimatum"] = {
+                name = 'Ultimatum',
                 text = {
-                    {'{C:mult}+#1#{} Mult',
+                    {"Current {C:green}Grinchness:"},
+                    {'{C:mult}+/-#1#{} Mult',
+                    "based on if you",
+                    "are a {C:attention}grinch{} or a {C:attention}saint",
                     '{stocking}before{}',},
-                    {'{C:chips}+#2#{} Chips',
-                    '{stocking}after{}',}
-                }
-            },
-            ["Santa Claus_stocking_toy_train"] = {
-                name = 'Toy Train',
-                text = {
-                    'Played {C:attention}cards',
-                    'permanently gain',
-                    '{C:chips}+#1#{} Chips when scored',
-                    'in a {C:attention}Straight',
-                    '{stocking}before{}',
-                }
-            },
-            ["Santa Claus_stocking_coal"] = {
-                name = 'Coal',
-                text = {
-                    'Someone has been bad',
-                    "{C:inactive,s:0.8}(Does nothing)"
-                }
-            },
-            ["Santa Claus_stocking_gingerbread"] = {
-                name = 'Gingerbread Man',
-                text = {
-                    '{C:green}Reroll{} the {C:attention}entire{} shop for {C:money}free',
-                    '{C:inactive}Can only be used once per shop',
-                    '{stocking}usable{}'
-                }
-            },
-            ['Santa Claus_stocking_jack_in_box_A'] = {
-                name = 'Jack in the Box',
-                text = {
-                    {
-                        '{C:white,X:red}X#4#{} Mult when',
-                        'scoring is complete',
-                        'then {C:attention}reset{} to {C:white,X:red}X#5#',
-                        '{stocking}after'
-                    },{
-                        'Close the box!',
-                        '{stocking}usable{}'
-                    }
-                }
-            },
-            ['Santa Claus_stocking_jack_in_box_B'] = {
-                name = 'Jack in the Box',
-                text = {
-                    {
-                        'Gain {C:white,X:red}X#3#{} Mult',
-                        'when a hand is played',
-                        '{C:inactive,s:0.8}(Currently {X:red,C:white,s:0.8}X#4#{C:inactive,s:0.8})'
-                    },{
-                        '{C:green}#1# in #2#{} chance to {C:attention}open',
-                        'and lose all {C:red}XMult',
-                    },{
-                        'Open the box!',
-                        '{stocking}usable{}'
-                    }
+                    {'Reroll {C:green}Grinchness',
+                    'with a cost of {C:gold}$#2#',
+                    '{C:inactive,s:0.7}(Price increases',
+                    '{C:inactive,s:0.7}by 1 per roll)',
+                    '{stocking}usable{}',},
+                    {'{C:attention}At the end of round,',
+                    'randomize {C:green}grinchness',
+                    'and reduce {C:attention}reroll price{}',
+                    'by {C:gold}$1'}
                 }
             }
         },
+        stocking_wrapped_present = {
+            ["[REDACTED]Autumn_stocking_present"] = {
+                name = '{V:1}Present',
+                text = {
+                    '{C:gl_pink,f:stocking_emoji}🍁{C:gl_pink}Some{C:gl_black}one {C:inactive}messed up',
+                    '  {C:inactive}the paint on this present...  ',
+                    '{C:inactive}Regardless,',
+                    '{C:inactive}wont you open it?'
+                }
+            },
+        }
     }
 }
