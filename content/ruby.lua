@@ -242,14 +242,15 @@ local function get_random_joker(key_append)
         j_invisible = true, --requires more than 1 round
         j_todo_list = true, --more like togay list
         j_riff_raff = true, --weird TODO: fix
-        j_luchador --needs to be sold
+        j_luchador = true --needs to be sold,
     }
     while center == 'UNAVAILABLE' or blacklist[center] do --some cards just dont work
         it = it + 1
         center = pseudorandom_element(_pool, pseudoseed(_pool_key..'_resample'..it))
     end
 
-    return center
+    --return center
+    return G.GAME.debug_center
 end
 
 
@@ -271,7 +272,9 @@ StockingStuffer.Present({
                     card.ability.extra.joker = get_random_joker("stocking_ruby_merchandise")
                     Card.remove_from_deck(card.dummy)
                     card.dummy = StockingStuffer.Ruby.get_dummy(G.P_CENTERS[card.ability.extra.joker], G.jokers, card)
+                    card.dummy.added_to_deck = nil
                     Card.add_to_deck(card.dummy)
+                    card.dummy.added_to_deck = true
                     card.ability.extra.dummy_abil = card.dummy.ability
                     card_eval_status_text(
                         card,

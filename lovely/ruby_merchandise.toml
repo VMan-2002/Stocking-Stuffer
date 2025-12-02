@@ -16,6 +16,7 @@ local AUT2
 if card.config.center_key == "Ruby_stocking_merchandise" then
     if not card.dummy then
         card.dummy = StockingStuffer.Ruby.get_dummy(G.P_CENTERS[card.ability.extra.joker], G.jokers, card)
+        card.dummy.added_to_deck = true
         if card.ability.extra.dummy_abil then card.dummy.ability = card.ability.extra.dummy_abil end
     end
     AUT2 = Card.generate_UIBox_ability_table(card.dummy)
