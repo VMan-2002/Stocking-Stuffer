@@ -317,24 +317,41 @@ StockingStuffer.Present({
     atlas = "Ruby_lavalamp",
     pos = { x = 0, y = 0 },
 
-    config = { extra = { x_mult = 1, x_mult_mod = 0.25 } },
+    config = { extra = { x_mult = 1, x_mult_mod = 0.2 } },
   
     calculate = function(self, card, context)
-        if context.discard and StockingStuffer.first_calculation then
-            if card.ability.extra.x_mult >= 3 - card.ability.extra.x_mult_mod then
-                SMODS.destroy_cards(card)
-                return {
-                    message = localize("k_shatter_ex")
-                }
-            else    
-                SMODS.scale_card(card, {
-                    ref_table = card.ability.extra,
-                    ref_value = "x_mult",
-                    scalar_value = "x_mult_mod"
-                })
+        if context.discard then
+            if card.ability.extra.x_mult >= 4 - card.ability.extra.x_mult_mod then
+                card.ability.extra.x_mult = 4
+                if StockingStuffer.first_calculation then
+                    G.E_MANAGER:add_event(Event{
+                        trigger = "after",
+                        func = function()
+                            G.E_MANAGER:add_event(Event{
+                            trigger = "after",
+                            delay = 0.75,
+                            func = function()
+                                card:shatter()
+                                return true
+                            end})
+                            return true
+                        end
+                    })
+                    return {
+                        message = localize("k_shatter_ex")
+                    }
+                end
+            else   
+                if StockingStuffer.second_calculation then 
+                    SMODS.scale_card(card, {
+                        ref_table = card.ability.extra,
+                        ref_value = "x_mult",
+                        scalar_value = "x_mult_mod"
+                    })
+                end
             end
         end
-        if context.joker_main and StockingStuffer.second_calculation then
+        if context.joker_main and StockingStuffer.first_calculation then
             return {
                 xmult = card.ability.extra.x_mult
             }

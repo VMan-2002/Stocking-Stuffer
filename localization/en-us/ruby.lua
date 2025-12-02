@@ -51,13 +51,13 @@ return {
                         "{stocking}before{}"
                     },
                     {
-                        "This Present {C:red}self destructs{} when",
-                        "reaching {X:mult,C:white}X3{} Mult",
+                        "This Present {C:red}self destructs{}",
+                        "when reaching {X:mult,C:white}X4{} Mult",
                         "{stocking}after"
                     },
                     {
-                        "Use This Present to reset",
-                        "Mult to {X:mult,C:white}X1{}",
+                        "Use This Present to",
+                        "reset Mult to {X:mult,C:white}X1{}",
                         "{stocking}usable"
                     }
                 }
