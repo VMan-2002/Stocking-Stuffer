@@ -1,6 +1,6 @@
 -- Developer name - Replace 'template' with your display name
 -- Note: This will be used to link your objects together, and be displayed under the name of your additions
-local display_name = 'template'
+local display_name = 'Eris'
 -- MAKE SURE THIS VALUE HAS BEEN CHANGED
 
 
@@ -22,7 +22,7 @@ StockingStuffer.Developer({
 
     -- Replace '000000' with your own hex code
     -- Used to colour your name and some particles when opening your present
-    colour = HEX('000000')
+    colour = HEX('C09ED9')
 })
 
 -- Wrapped Present Template
