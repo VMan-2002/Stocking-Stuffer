@@ -1,12 +1,13 @@
 return {
     descriptions = {
         stocking_present = {
-            Ruby_stocking_gift_card = {
-                name = 'Prepaid Card',
+            Ruby_stocking_friendship_necklace = {
+                name = 'Friendship Necklace',
                 text = {
-                    'Shop Cards become {C:money}free{} on use',
-                    '{C:inactive}Can only be used once per shop',
-                    '{stocking}usable{}'
+                    'Played {C:attention}face{} cards',
+                    'Gain a random {C:attention}Enhancement{}',
+                    "{C:attention}Seal{} or {C:dark_edition}Edition{}",
+                    "{stocking}before"
                 }
             },
             Ruby_stocking_bag_of_gems = {

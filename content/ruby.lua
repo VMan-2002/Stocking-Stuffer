@@ -58,7 +58,7 @@ StockingStuffer.WrappedPresent({
 StockingStuffer.Present({
     developer = display_name,
 
-    key = 'gift_card',
+    key = 'friendship_necklace',
     pos = { x = 1, y = 0 },
 
     config = { extra = {ready = true} },
@@ -77,11 +77,55 @@ StockingStuffer.Present({
         return true
     end,    
     calculate = function(self, card, context)
-        if context.starting_shop and StockingStuffer.first_calculation then
-            card.ability.extra.ready = true
-            return {
-                message = 'Ready!'
+        if context.individual and context.cardarea == G.play and context.other_card:is_face() and StockingStuffer.first_calculation then
+            local opts = {
+                context.other_card.config.center.set == "Default" and "Enhanced" or nil,
+                context.other_card.config.center.set == "Default" and "Enhanced" or nil,
+                context.other_card.config.center.set == "Default" and "Enhanced" or nil,
+                not context.other_card.seal and "Seal" or nil,
+                not context.other_card.seal and "Seal" or nil,
+                not context.other_card.edition and "Edition" or nil
             }
+            if #opts > 0 then
+                local v = context.other_card
+                local opt = pseudorandom_element(opts, pseudoseed("ruby_present_necklace"))
+                if opt == "Enhanced" then
+                    G.E_MANAGER:add_event(Event{
+                        func = function()
+                            v:flip()
+                            return true
+                        end
+                    })
+                    G.E_MANAGER:add_event(Event{
+                        func = function()
+                            v:set_ability(SMODS.poll_enhancement({guaranteed = true, key_append = "ruby_present_necklace_enhancement"}))
+                            return true
+                        end
+                    })
+                    G.E_MANAGER:add_event(Event{
+                        func = function()
+                            v:flip()
+                            return true
+                        end
+                    })
+                end
+                if opt == "Seal" then
+                    v:set_seal(SMODS.poll_seal({guaranteed = true, key_append = "ruby_present_necklace_seal"}))
+                end
+                if opt == "Edition" then
+                    G.E_MANAGER:add_event(Event{
+                        func = function()
+                            v:juice_up()
+                            v:set_edition(SMODS.poll_edition({guaranteed = true, key_append = "ruby_present_necklace_edition"}))
+                            return true
+                        end
+                    })
+                end
+                print(opt)
+                return {
+                    message = localize("k_upgrade_ex")
+                }
+            end
         end
     end
 })
