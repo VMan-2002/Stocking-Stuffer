@@ -121,7 +121,6 @@ StockingStuffer.Present({
                         end
                     })
                 end
-                print(opt)
                 return {
                     message = localize("k_upgrade_ex")
                 }
@@ -291,9 +290,7 @@ local function get_random_joker(key_append)
         j_egg = true, --idk why but i just couldnt fix this
         j_invisible = true, --requires more than 1 round
         j_todo_list = true, --more like togay list
-        j_riff_raff = true, --weird TODO: fix
         j_luchador = true, --needs to be sold,
-        j_riff_raff = true --until bug gets fixed
     }
     while center == 'UNAVAILABLE' or blacklist[center] do --some cards just dont work
         it = it + 1
@@ -344,9 +341,30 @@ StockingStuffer.Present({
             card.dummy.added_to_deck = true
             if card.ability.extra.dummy_abil then card.dummy.ability = card.ability.extra.dummy_abil end
         end
-        local ret = Card.calculate_joker(card.dummy, context)
-        card.ability.extra.dummy_abil = card.dummy.ability
-        return ret
+        if card.ability.extra.joker == "j_riff_raff" then
+            SMODS.calculate_effect({message = localize('k_plus_joker')}, card)
+            G.E_MANAGER:add_event(Event({
+                trigger = 'after', delay = 0.7,
+                func = function()        
+                    G.FUNCS.toggle_jokers_presents()
+                    return true
+                end
+            }))
+            G.E_MANAGER:add_event(Event({
+                trigger = 'after', delay = 0.7,
+                func = function()                
+                    for i=1, card.dummy.ability.extra do
+                        local _c = SMODS.add_card({set = 'Joker', skip_materialize = true})
+                        _c:start_materialize()
+                    end
+                    return true
+                end
+            }))
+        else    
+            local ret = Card.calculate_joker(card.dummy, context)
+            card.ability.extra.dummy_abil = card.dummy.ability
+            return ret
+        end
     end,
     loc_vars = function(self, q, card)
         return {
