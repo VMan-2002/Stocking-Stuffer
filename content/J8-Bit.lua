@@ -51,7 +51,7 @@ local get_booster_bg_color = function(key)
         bg_color = G.C.SECONDARY_SET.Tarot
     elseif string.find(key, "celestial") then
         bg_color = G.C.SECONDARY_SET.Planet
-    elseif string.find(key, "ethereal") then
+    elseif string.find(key, "spectral") then
         bg_color = G.C.SECONDARY_SET.Spectral
     end
     return bg_color
@@ -71,6 +71,13 @@ StockingStuffer.Present({
         if card.ability.extra.saved_booster ~= nil then
             --print(G.P_CENTERS[card.ability.extra.saved_booster])
 
+            local booster_cards = CardArea(0, 0, G.CARD_W, G.CARD_H * 0.75,
+                { type = 'title', card_limit = '1', highlight_limit = 0, collection = true })
+            local booster_copy = SMODS.create_card({ key = card.ability.extra.saved_booster })
+            booster_copy.T.w = G.CARD_W * 0.675
+            booster_copy.T.h = G.CARD_H * 0.675
+            booster_cards:emplace(booster_copy)
+
             local loc_name = card.ability.extra.saved_booster
             loc_name = string.sub(loc_name, 1, string.len(loc_name) - string.find(string.reverse(loc_name), '_'))
 
@@ -81,19 +88,37 @@ StockingStuffer.Present({
                     nodes = {
                         {
                             n = G.UIT.C,
-                            config = { ref_table = card, align = "m", colour = get_booster_bg_color(loc_name), r = 0.05, padding = 0.06 },
+                            config = { ref_table = card, align = "cm", colour = get_booster_bg_color(loc_name), r = 0.05, padding = 0.05 },
                             nodes = {
                                 {
-                                    n = G.UIT.T,
-                                    config = {
-                                        text = ' ' .. localize({
-                                            type = 'name_text',
-                                            key = loc_name,
-                                            set =
-                                            'Other'
-                                        }) .. ' ',
-                                        colour = G.C.UI.TEXT_LIGHT,
-                                        scale = 0.32 * 0.9
+                                    n = G.UIT.R,
+                                    config = { ref_table = card, align = "cm", colour = G.C.UI.TEXT_LIGHT, r = 0.05, padding = 0.05 },
+                                    nodes = {
+                                        {
+                                            n = G.UIT.O,
+                                            config = {
+                                                object = booster_cards
+                                            }
+                                        }
+                                    }
+                                },
+                                {
+                                    n = G.UIT.R,
+                                    config = { ref_table = card, align = "cm", colour = get_booster_bg_color(loc_name), no_fill = true, r = 0.05, padding = 0.05 },
+                                    nodes = {
+                                        {
+                                            n = G.UIT.T,
+                                            config = {
+                                                text = ' ' .. localize({
+                                                    type = 'name_text',
+                                                    key = loc_name,
+                                                    set =
+                                                    'Other'
+                                                }) .. ' ',
+                                                colour = G.C.UI.TEXT_LIGHT,
+                                                scale = 0.32 * 0.9
+                                            }
+                                        }
                                     }
                                 },
                             }

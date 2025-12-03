@@ -15,6 +15,7 @@ return {
                     "Creates a {C:money}double-priced",
                     "copy of the most recently",
                     "opened {C:attention}Booster Pack",
+                    "{s:0.75}(excluding copied Booster Packs)",
                     '{stocking}usable{}'
                 }
             },
