@@ -93,7 +93,7 @@ StockingStuffer.Present({ --cute little jingle ball
     end
 })
 
-StockingStuffer.Present({
+StockingStuffer.Present({ --nip toy
     developer = display_name,
     key = 'catnip',
     pos = { x = 5, y = 0 },
@@ -163,7 +163,7 @@ function CardArea:add_to_highlighted(card, silent, args)
 
 end
 
-StockingStuffer.Present({
+StockingStuffer.Present({ --fishy treat :9
     developer = display_name,
     key = 'treat',
     pos = { x = 5, y = 0 },
