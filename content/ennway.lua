@@ -111,26 +111,60 @@ function create_rotoscoped_dancing_robot()
 end
 
 -- Cool Emoji
+local ennway_ChargeColor = HEX("8F71A3");
 StockingStuffer.Present({
     developer = display_name,
 
     key = 'coolEmoji',
     pos = { x = 3, y = 0 },
+    config = { charge = 0, currentchips = 0 },
     can_use = function(self, card)
-        return false
+        return card.ability.charge > 0 and G.STATE == G.STATES.SELECTING_HAND
     end,
-    use = function(self, card, area, copier) 
-        if StockingStuffer.first_calculation then
-            
-        elseif StockingStuffer.second_calculation then
-            
-        end
+    use = function(self, card, area, copier)
+        G.GAME.chips = G.GAME.chips + card.ability.currentchips
+        card.ability.charge = 0
+        card.ability.currentchips = 0
+        G.E_MANAGER:add_event(Event({
+            delay = 0.2,
+            func = function()
+                if G.GAME.blind.chips < G.GAME.chips then
+                    end_round()
+                end
+                return true
+            end
+        }))
     end,
     keep_on_use = function(self, card)
-        
+        return true
+    end,
+    loc_vars = function(self, info_queue, card)
+        return {
+            vars = {
+                card.ability.charge,
+                card.ability.currentchips,
+                colours = { 
+                    ennway_ChargeColor
+                }
+            }
+        }
     end,
     calculate = function(self, card, context)
-
+        card.ability.currentchips = math.floor(G.GAME.blind.chips * (card.ability.charge / 100))
+        if context.individual and context.cardarea == G.play and not context.end_of_round then
+            if context.other_card:is_face() then
+                G.E_MANAGER:add_event(Event({
+                    func = function()
+                        card.ability.charge = card.ability.charge + 5
+                        return true
+                    end
+                }))
+                return {
+                    message = "+5% Charge",
+                    colour = ennway_ChargeColor
+                }
+            end
+        end
     end
 })
 

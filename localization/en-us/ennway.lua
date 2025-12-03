@@ -16,12 +16,16 @@ return {
                 }
             },
             ["ENNWAY_stocking_coolEmoji"] = {
-                name = 'Cool Emoji',
+                name = 'This Cool Emoji',
                 text = {
-                    {'{C:chips}-#1#{} Chips',
-                    '{stocking}before{}',},
-                    {'{X:chips,C:white}X#2#{} Chips',
-                    '{stocking}after{}',}
+                    'When {C:attention}face card{} is',
+                    'triggered, add {V:1}5% Charge',
+                    ' ',
+                    'On use: Expel {V:1}Charge',
+                    'and complete an identical',
+                    'percentage of {C:attention}current',
+                    '{C:attention}Blind',
+                    '{c:inactive}(Currently {V:1}#1#%{c:inactive} / {C:chips}#2#{} Chips{c:inactive})'
                 }
             },
             ["ENNWAY_stocking_lapisLazuli"] = {
@@ -33,15 +37,6 @@ return {
                     '{stocking}after{}',}
                 }
             }
-        },
-        -- stocking_wrapped_present = {
-        --     template_stocking_present = {
-        --         name = '{V:1}Present',
-        --         text = {
-        --             '  {C:inactive}What could be inside?  ',
-        --             '{C:inactive}Open me to find out!'
-        --         }
-        --     },
-        -- }
+        }
     }
 }
