@@ -20,6 +20,14 @@ SMODS.Sound({
     key = 'ennway_robot_sfx',
     path = 'ennway_robot_sfx.ogg',
 })
+SMODS.Sound({
+    key = 'ennway_face_charge',
+    path = 'ennway_face_charge.ogg',
+})
+SMODS.Sound({
+    key = 'ennway_face_unleash',
+    path = 'ennway_face_unleash.ogg',
+})
 
 -- Developer ENNWAY!
 StockingStuffer.Developer({
@@ -88,7 +96,7 @@ StockingStuffer.Present({
     end
 })
 
--- ENNWAY's Rotoscoped Dancing Robot
+-- Rotoscoped Dancing Robot
 function create_rotoscoped_dancing_robot()
     local tree_sprite = AnimatedSprite(0, 0, 2, 2, G.ANIMATION_ATLAS['stocking_ennway_rotoscoped_dancing_robot'])
 
@@ -107,8 +115,8 @@ function create_rotoscoped_dancing_robot()
     return G.GAME.ennways_rotoscoped_dancing_robot
 end
 
--- Cool Emoji
 local ennway_ChargeColor = HEX("8F71A3");
+-- Cool Emoji
 StockingStuffer.Present({
     developer = display_name,
 
@@ -119,14 +127,32 @@ StockingStuffer.Present({
         return card.ability.charge > 0 and G.STATE == G.STATES.SELECTING_HAND
     end,
     use = function(self, card, area, copier)
-        G.GAME.chips = G.GAME.chips + card.ability.currentchips
-        card.ability.charge = 0
-        card.ability.currentchips = 0
         G.E_MANAGER:add_event(Event({
             delay = 0.2,
+            trigger = 'after',
             func = function()
-                if G.GAME.blind.chips < G.GAME.chips then
-                    end_round()
+                play_sound('stocking_ennway_face_unleash')
+                G.GAME.chips = G.GAME.chips + card.ability.currentchips
+
+                G.hand_text_area.game_chips:juice_up()
+                G.hand_text_area.blind_chips:juice_up()
+                card.ability.charge = 0
+                card.ability.currentchips = 0
+                if G.GAME.blind.chips - G.GAME.chips < 0 then
+                    -- event code below referenced from Cryptid's Semicolon
+                    G.E_MANAGER:add_event(
+                        Event({
+                            trigger = "immediate",
+                            func = function()
+                                if G.STATE ~= G.STATES.SELECTING_HAND then return false end
+                                G.STATE = G.STATES.HAND_PLAYED
+                                G.STATE_COMPLETE = true
+                                end_round()
+                                return true
+                            end,
+                        }),
+                        "other"
+                    )
                 end
                 return true
             end
@@ -159,6 +185,7 @@ StockingStuffer.Present({
                 }))
                 return {
                     message = "+"..card.ability.chargegain.."% Charge",
+                    sound = "stocking_ennway_face_charge",
                     colour = ennway_ChargeColor
                 }
             end
