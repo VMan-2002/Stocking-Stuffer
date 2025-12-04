@@ -317,7 +317,7 @@ StockingStuffer.custom_card_areas = function(game)
         game.jokers.T.w, game.jokers.T.h,
         { card_limit = 1, type = 'discard', highlight_limit = 1 })
     
-    local c = SMODS.create_card({key = 'j_stocking_dummy', area = game.stocking_flipper})
+    local c = SMODS.create_card({key = 'j_stocking_dummy', area = game.stocking_flipper, no_edition = true, skip_materialize = true})
     game.stocking_flipper:emplace(c)
     
     game.christmas_tree = UIBox{
