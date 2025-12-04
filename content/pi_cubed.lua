@@ -332,7 +332,7 @@ StockingStuffer.Present({
     end,
 
     calculate = function(self, card, context)
-        if StockingStuffer.first_calculation and context.joker_main then
+        if StockingStuffer.first_calculation and context.joker_main and card.ability.extra.mult > 0 then
             return {
                 mult = card.ability.extra.mult
             }
