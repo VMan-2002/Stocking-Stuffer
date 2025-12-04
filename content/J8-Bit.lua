@@ -169,7 +169,7 @@ StockingStuffer.Present({
         -- check context and return appropriate values
         -- StockingStuffer.first_calculation is true before jokers are calculated
         -- StockingStuffer.second_calculation is true after jokers are calculated
-        if context.open_booster and StockingStuffer.second_calculation and not context.card.ability.stocking_j8bit_booster_copy and not context.blueprint then
+        if context.open_booster and StockingStuffer.second_calculation and context.card.config.center.key ~= 'p_stocking_present_select' and not context.card.ability.stocking_j8bit_booster_copy and not context.blueprint then
             --print("-PRINTING CENTER-")
             --print(context.card.config.center)
             card.ability.extra.saved_booster = context.card.config.center.key
@@ -355,7 +355,7 @@ StockingStuffer.Present({
     developer = display_name, -- DO NOT CHANGE
 
     key = 'water_cooler',     -- keys are prefixed with 'display_name_stocking_' for reference
-    pos = { x = 5, y = 0 },
+    pos = { x = 4, y = 0 },
     pixel_size = { w = 51, h = 92 },
 
     config = { extra = { saved_seal = nil, can_use = true } },
@@ -380,7 +380,7 @@ StockingStuffer.Present({
                 card.children.center:set_sprite_pos({ x = card.ability.extra.saved_seal == nil and 4 or 5, y = 0 })
                 card:juice_up()
                 G.hand.highlighted[1]:juice_up()
-                --card.ability.extra.can_use = false
+                card.ability.extra.can_use = false
                 return true
             end
         }))
@@ -390,63 +390,82 @@ StockingStuffer.Present({
         return true
     end,
     disable_use_animation = true,
+    draw = function(self, card, layer)
+        if card.config.center.discovered or card.bypass_discovery_center then
+            card.children.center:draw_shader('booster', nil, card.ARGS.send_to_shader)
+            -- draw da seal
+            local seal = G.P_SEALS[card.ability.extra.saved_seal] or {}
+            if seal and card.ability.extra.saved_seal ~= nil then
+                --print(seal)
+                if type(seal.draw) == 'function' then
+                    seal:draw(card, layer)
+                else
+                    G.shared_seals[card.ability.extra.saved_seal].role.draw_major = card
+                    G.shared_seals[card.ability.extra.saved_seal]:draw_shader('dissolve', nil, nil, nil,
+                        card.children.center)
+                    if card.ability.extra.saved_seal == 'Gold' then
+                        G.shared_seals[card.ability.extra.saved_seal]:draw_shader('voucher', nil,
+                            card.ARGS.send_to_shader, nil, card.children.center)
+                    end
+                end
+            end
+        end
+    end,
     loc_vars = function(self, info_queue, card)
-        local main_end = {}
+        local main_end = nil
         if card.area and card.area == G.stocking_present then
-            print("printing " .. localize("J8-Bit_stocking_" .. (card.ability.extra.can_use and 'ready_ex' or 'waiting')))
-            main_end[#main_end + 1] = {
+            local disableable = card.ability.extra.can_use
+            local seal_ref = G.P_SEALS[card.ability.extra.saved_seal]
+            if card.ability.extra.saved_seal ~= nil then
+                info_queue[#info_queue + 1] = G.P_SEALS[card.ability.extra.saved_seal]
+            end
+            main_end = {
                 {
                     n = G.UIT.C,
-                    config = { align = "bm", minh = 0.4, colour = G.C.UI.TEXT_LIGHT, no_fill = true },
+                    config = { align = "cm", minh = 0.4 },
                     nodes = {
                         {
-                            n = G.UIT.C,
-                            config = { ref_table = card, align = "m", colour = --[[card.ability.extra.can_use and G.C.GREEN or ]] G.C.RED, r = 0.05, padding = 0.06 },
+                            n = G.UIT.R,
+                            config = { ref_table = card, align = "cm", colour = disableable and G.C.GREEN or G.C.RED, r = 0.05, padding = 0.06 },
                             nodes = {
-                                { n = G.UIT.T, config = { text = ' ' .. localize("J8-Bit_stocking_" .. (card.ability.extra.can_use and 'ready_ex' or 'waiting')) .. ' ', colour = G.C.UI.TEXT_LIGHT, scale = 0.32 * 0.9 } },
+                                { n = G.UIT.T, config = { text = ' ' .. localize("J8-Bit_stocking_" .. (disableable and 'ready_ex' or 'waiting')) .. ' ', colour = G.C.UI.TEXT_LIGHT, scale = 0.32 * 0.9 } },
+                            }
+                        }
+                    }
+                },
+                {
+                    n = G.UIT.C,
+                    config = { align = "cm", minh = 0.4 },
+                    nodes = {
+                        {
+                            n = G.UIT.R,
+                            config = { ref_table = card, align = "cm", colour = card.ability.extra.saved_seal ~= nil and seal_ref.badge_colour or G.C.UI.TEXT_DARK, r = 0.05, padding = 0.06, emboss = 0.1 },
+                            nodes = {
+                                { n = G.UIT.T, config = { text = ' ' .. (card.ability.extra.saved_seal ~= nil and localize { type = 'name_text', set = "Other", key = string.lower(card.ability.extra.saved_seal) .. "_seal" } or localize("J8-Bit_stocking_no_seal")) .. ' ', colour = G.C.UI.TEXT_LIGHT, scale = 0.325 } },
                             }
                         }
                     }
                 }
             }
-            if card.ability.extra.saved_seal ~= nil then
-                print("printing seal info")
-                local seal_ref = G.P_SEALS[card.ability.extra.saved_seal]
-                print(seal_ref)
-                main_end[#main_end + 1] = {
-                    {
-                        n = G.UIT.C,
-                        config = { align = "bm", minh = 0.4, colour = G.C.UI.TEXT_LIGHT, no_fill = true },
-                        nodes = {
-                            {
-                                n = G.UIT.C,
-                                config = { ref_table = card, align = "m", colour = seal_ref.badge_colour, r = 0.05, padding = 0.06 },
-                                nodes = {
-                                    {
-                                        n = G.UIT.T,
-                                        config = {
-                                            text = ' ' .. localize({
-                                                type = 'name_text',
-                                                key = seal_ref.key,
-                                                set =
-                                                'Other'
-                                            }) .. ' ',
-                                            colour = G.C.UI.TEXT_LIGHT,
-                                            scale = 0.32 * 0.9
-                                        }
-                                    },
-                                }
-                            }
-                        }
-                    }
-                }
-            end
         end
         return {
             key = card.ability.extra.saved_seal == nil and 'J8-Bit_stocking_water_cooler_a' or
                 'J8-Bit_stocking_water_cooler_b',
             main_end = main_end
         }
+    end,
+    calculate = function(self, card, context)
+        -- check context and return appropriate values
+        -- StockingStuffer.first_calculation is true before jokers are calculated
+        -- StockingStuffer.second_calculation is true after jokers are calculated
+        local end_of_blind = context.end_of_round and context.game_over == false and context.main_eval
+        if end_of_blind and not context.blueprint and StockingStuffer.second_calculation and not card.ability.extra.can_use then
+            card.ability.extra.can_use = true
+            return {
+                message = localize("J8-Bit_stocking_ready_ex"),
+                colour = G.C.BLUE
+            }
+        end
     end,
     load = function(self, card, card_table, other_card)
         card.loaded = true

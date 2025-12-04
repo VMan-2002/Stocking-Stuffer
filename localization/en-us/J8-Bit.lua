@@ -9,6 +9,7 @@ return {
             ["J8-Bit_stocking_waiting"] = 'Waiting...',
             ["J8-Bit_stocking_ready_ex"] = 'Ready!',
             ["J8-Bit_stocking_activated_ex"] = 'Activated!',
+            ["J8-Bit_stocking_no_seal"] = 'No Seal',
         }
     },
     descriptions = {
@@ -45,10 +46,10 @@ return {
             ["J8-Bit_stocking_water_cooler_a"] = {
                 name = 'Water Cooler',
                 text = {
-                    "Use on a selected playing card with",
-                    "a {C:attention}Seal to {C:attention}store{} it,",
+                    "Use on a selected playing card",
+                    "with a {C:attention}Seal{} to {C:attention}store{} it,",
                     "removes {C:attention}Seal{} from card",
-                    "{C:inactive}(Must wait one Blind between uses)",
+                    "{C:inactive,s:0.75}(Must wait one Blind between uses)",
                     '{stocking}usable{}'
                 }
             },
@@ -58,7 +59,7 @@ return {
                     "Use on a selected playing",
                     "card without a {C:attention}Seal",
                     "to {C:attention}add{} it to the card",
-                    "{C:inactive}(Must wait one Blind between uses)",
+                    "{C:inactive,s:0.75}(Must wait one Blind between uses)",
                     '{stocking}usable{}'
                 }
             },
