@@ -5,6 +5,10 @@ return {
             ["J8-Bit_stocking_tagged"] = 'Tagged!',
             ["J8-Bit_stocking_active"] = 'active',
             ["J8-Bit_stocking_inactive"] = 'inactive',
+            ["J8-Bit_stocking_charged_ex"] = 'Charged!',
+            ["J8-Bit_stocking_waiting"] = 'Waiting...',
+            ["J8-Bit_stocking_ready_ex"] = 'Ready!',
+            ["J8-Bit_stocking_activated_ex"] = 'Activated!',
         }
     },
     descriptions = {
@@ -65,8 +69,8 @@ return {
                     "{C:attention}Straights{} or {C:attention}Flushes,",
                     "{C:red}use{} this card to turn",
                     "the next played hand",
-                    "into a {C:attention}Straight Flush",
-                    '{stocking}usable{}'
+                    "into a {C:attention}#3#",
+                    '{stocking}usable{}{}{stocking}before'
                 }
             }
         },

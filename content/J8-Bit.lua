@@ -358,22 +358,29 @@ StockingStuffer.Present({
     pos = { x = 5, y = 0 },
     pixel_size = { w = 51, h = 92 },
 
-    config = { extra = { state = false } },
+    config = { extra = { saved_seal = nil, can_use = true } },
     -- use and can_use are completely optional, delete if you do not need your present to be usable
     can_use = function(self, card)
         -- check for use condition here
-        return true
+        return G.hand and #G.hand.highlighted == 1 and
+            ((G.hand.highlighted[1].seal ~= nil) == (card.ability.extra.saved_seal == nil)) and
+            card.ability.extra.can_use
     end,
     use = function(self, card)
-        if card.ability.extra.state == true then
-            card.ability.extra.state = false
-        else
-            card.ability.extra.state = true
-        end
         G.E_MANAGER:add_event(Event({
-            trigger = 'immediate',
+            trigger = 'after',
             func = function()
-                card.children.center:set_sprite_pos({ x = card.ability.extra.state and 4 or 5, y = 0 })
+                if card.ability.extra.saved_seal then
+                    G.hand.highlighted[1]:set_seal(card.ability.extra.saved_seal)
+                    card.ability.extra.saved_seal = nil
+                else
+                    card.ability.extra.saved_seal = G.hand.highlighted[1].seal
+                    G.hand.highlighted[1]:set_seal()
+                end
+                card.children.center:set_sprite_pos({ x = card.ability.extra.saved_seal == nil and 4 or 5, y = 0 })
+                card:juice_up()
+                G.hand.highlighted[1]:juice_up()
+                --card.ability.extra.can_use = false
                 return true
             end
         }))
@@ -382,11 +389,63 @@ StockingStuffer.Present({
         -- return true when card should be kept
         return true
     end,
+    disable_use_animation = true,
     loc_vars = function(self, info_queue, card)
+        local main_end = {}
+        if card.area and card.area == G.stocking_present then
+            print("printing " .. localize("J8-Bit_stocking_" .. (card.ability.extra.can_use and 'ready_ex' or 'waiting')))
+            main_end[#main_end + 1] = {
+                {
+                    n = G.UIT.C,
+                    config = { align = "bm", minh = 0.4, colour = G.C.UI.TEXT_LIGHT, no_fill = true },
+                    nodes = {
+                        {
+                            n = G.UIT.C,
+                            config = { ref_table = card, align = "m", colour = --[[card.ability.extra.can_use and G.C.GREEN or ]] G.C.RED, r = 0.05, padding = 0.06 },
+                            nodes = {
+                                { n = G.UIT.T, config = { text = ' ' .. localize("J8-Bit_stocking_" .. (card.ability.extra.can_use and 'ready_ex' or 'waiting')) .. ' ', colour = G.C.UI.TEXT_LIGHT, scale = 0.32 * 0.9 } },
+                            }
+                        }
+                    }
+                }
+            }
+            if card.ability.extra.saved_seal ~= nil then
+                print("printing seal info")
+                local seal_ref = G.P_SEALS[card.ability.extra.saved_seal]
+                print(seal_ref)
+                main_end[#main_end + 1] = {
+                    {
+                        n = G.UIT.C,
+                        config = { align = "bm", minh = 0.4, colour = G.C.UI.TEXT_LIGHT, no_fill = true },
+                        nodes = {
+                            {
+                                n = G.UIT.C,
+                                config = { ref_table = card, align = "m", colour = seal_ref.badge_colour, r = 0.05, padding = 0.06 },
+                                nodes = {
+                                    {
+                                        n = G.UIT.T,
+                                        config = {
+                                            text = ' ' .. localize({
+                                                type = 'name_text',
+                                                key = seal_ref.key,
+                                                set =
+                                                'Other'
+                                            }) .. ' ',
+                                            colour = G.C.UI.TEXT_LIGHT,
+                                            scale = 0.32 * 0.9
+                                        }
+                                    },
+                                }
+                            }
+                        }
+                    }
+                }
+            end
+        end
         return {
-            key = card.ability.extra.state and 'J8-Bit_stocking_water_cooler_a' or
+            key = card.ability.extra.saved_seal == nil and 'J8-Bit_stocking_water_cooler_a' or
                 'J8-Bit_stocking_water_cooler_b',
-            vars = {}
+            main_end = main_end
         }
     end,
     load = function(self, card, card_table, other_card)
@@ -394,20 +453,8 @@ StockingStuffer.Present({
     end,
     update = function(self, card, dt)
         if card.loaded then
-            card.children.center:set_sprite_pos({ x = card.ability.extra.state and 4 or 5, y = 0 })
+            card.children.center:set_sprite_pos({ x = card.ability.extra.saved_seal == nil and 4 or 5, y = 0 })
             card.loaded = false
-        end
-    end,
-
-    -- calculate is completely optional, delete if your present does not need it
-    calculate = function(self, card, context)
-        -- check context and return appropriate values
-        -- StockingStuffer.first_calculation is true before jokers are calculated
-        -- StockingStuffer.second_calculation is true after jokers are calculated
-        if context.joker_main then
-            return {
-                message = 'example'
-            }
         end
     end
 })
@@ -419,15 +466,48 @@ StockingStuffer.Present({
     key = 'tech_x',           -- keys are prefixed with 'display_name_stocking_' for reference
     pos = { x = 6, y = 0 },
     pixel_size = { w = 61, h = 45 },
-
+    config = { extra = { charges = 0, charges_needed = 3, new_hand_type = 'Straight Flush', activated = false } },
+    loc_vars = function(self, info_queue, card)
+        local main_end = nil
+        if card.area and card.area == G.stocking_present then
+            local disableable = card.ability.extra.activated
+            main_end = {
+                {
+                    n = G.UIT.C,
+                    config = { align = "bm", minh = 0.4 },
+                    nodes = {
+                        {
+                            n = G.UIT.C,
+                            config = { ref_table = card, align = "m", colour = disableable and G.C.GREEN or G.C.RED, r = 0.05, padding = 0.06 },
+                            nodes = {
+                                { n = G.UIT.T, config = { text = ' ' .. localize("J8-Bit_stocking_" .. (disableable and 'active' or 'inactive')) .. ' ', colour = G.C.UI.TEXT_LIGHT, scale = 0.32 * 0.9 } },
+                            }
+                        }
+                    }
+                }
+            }
+        end
+        return {
+            vars = { card.ability.extra.charges, card.ability.extra.charges_needed, localize(card.ability.extra.new_hand_type, 'poker_hands') },
+            main_end = main_end
+        }
+    end,
     -- use and can_use are completely optional, delete if you do not need your present to be usable
     can_use = function(self, card)
         -- check for use condition here
-        return true
+        return card.ability.extra.charges >= card.ability.extra.charges_needed and not card.ability.extra.activated
     end,
     use = function(self, card, area, copier)
-        -- do stuff here
-        print('example')
+        card.ability.extra.charges = card.ability.extra.charges - card.ability.extra.charges_needed
+        card.ability.extra.activated = true
+        local eval = function() return not card.ability.extra.activated and not G.RESET_JIGGLES end
+        juice_card_until(card, eval, true)
+        SMODS.calculate_effect({
+            {
+                message = localize("J8-Bit_stocking_activated_ex"),
+                colour = G.C.RED
+            }
+        }, card)
     end,
     keep_on_use = function(self, card)
         -- return true when card should be kept
@@ -439,10 +519,24 @@ StockingStuffer.Present({
         -- check context and return appropriate values
         -- StockingStuffer.first_calculation is true before jokers are calculated
         -- StockingStuffer.second_calculation is true after jokers are calculated
-        if context.joker_main then
+        if context.before and StockingStuffer.first_calculation and (not card.ability.extra.activated and (next(context.poker_hands['Straight']) or next(context.poker_hands['Flush']))) then
+            card.ability.extra.charges = card.ability.extra.charges + 1
             return {
-                message = 'example'
+                message = (card.ability.extra.charges >= card.ability.extra.charges_needed) and
+                    localize("J8-Bit_stocking_ready_ex") or localize("J8-Bit_stocking_charged_ex"),
+                colour = G.C.RED
             }
+        end
+        if context.evaluate_poker_hand and StockingStuffer.second_calculation and card.ability.extra.activated and not context.blueprint then
+            for poker_hand_key, _ in pairs(G.GAME.hands) do
+                context.poker_hands[_] = context.poker_hands[card.ability.extra.new_hand_type]
+            end
+            return {
+                replace_scoring_name = card.ability.extra.new_hand_type
+            }
+        end
+        if context.after and StockingStuffer.second_calculation and card.ability.extra.activated and not context.blueprint then
+            card.ability.extra.activated = false
         end
     end
 })
