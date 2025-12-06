@@ -172,6 +172,11 @@ SMODS.DrawStep(
     order = -25,
     func = function(card, layer)
         if card.ditto or card.config.center.key == "[REDACTED]Autumn_stocking_ditto" then
+            card.children.particles = card.children.particles or Particles(1, 1, 0, 0, {
+                timer = 0.1, scale = 0.075, initialize = false,
+                speed = 0.25, padding = 1, attach = card,
+                fill = true, colours = {G.C.PURPLE},
+            })
             local _xOffset = (71 - 80)/2/30
             local _yOffset = (95 - 80)/2/30
             local scale_mod = 0.02 * math.sin(1.8*G.TIMERS.REAL)
