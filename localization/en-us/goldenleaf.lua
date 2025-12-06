@@ -2,7 +2,9 @@ return {
     misc = {
         dictionary = {
             ultimatum_grinch = 'Grinch',
-            ultimatum_saint = 'Saint'
+            ultimatum_saint = 'Saint',
+            imp_painter_strip = 'Stripped!',
+            imp_painter_enhance = 'Enhanced!',
         }
     },
     descriptions = {
@@ -17,6 +19,34 @@ return {
             },
         },
         stocking_present = {
+            ["[REDACTED]Autumn_stocking_improvised_painter_white"] = {
+                name = {'Improvised', 'Painter'},
+                text = {
+                    {
+                    "Strip the {C:attention}enhancement{}",
+                    "from scored enhanced",
+                    "cards and {C:attention}store{} it in",
+                    "this Joker",
+                    "{C:inactive}(Latest Enhancement: #1#)",
+                    '{stocking}after{}',},
+                    {'Switch to the Paintbrush',
+                    '{stocking}usable{}',}
+                }
+            },
+            ["[REDACTED]Autumn_stocking_improvised_painter_paint"] = {
+                name = {'Improvised', 'Painter'},
+                text = {
+                    {
+                    "{C:attention}Enhance{} scored unenhanced",
+                    "cards with the",
+                    "{C:attention}enhancements stored{} in",
+                    "this Joker",
+                    "{C:inactive}(Latest Enhancement: #1#)",
+                    '{stocking}before{}',},
+                    {'Switch to White-Out',
+                    '{stocking}usable{}',}
+                }
+            },
             ["[REDACTED]Autumn_stocking_gic"] = {
                 name = {'Generic Isometric', 'Present-shaped Cube'},
                 text = {

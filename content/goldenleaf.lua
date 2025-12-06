@@ -240,8 +240,9 @@ function Card:load(cardTable, other_card)
     self.ditto = cardTable.ditto
     return st
 end
+
 -- GIC
-        
+    
 StockingStuffer.Present({
     developer = display_name,
     key = 'gic',
@@ -252,4 +253,120 @@ StockingStuffer.Present({
     remove_from_deck =  function (self, card, from_debuff)
         G.P_CENTERS.p_stocking_present_select.config.choose = G.P_CENTERS.p_stocking_present_select.config.choose - 1
     end,
+})
+
+-- IMPROVISED PAINTER
+    
+local ref = Card.set_ability
+function Card:set_ability(a, ...)
+    if a then
+        return ref(self, a, ...)
+    end
+end
+StockingStuffer.Present({
+    developer = display_name,
+    key = 'improvised_painter',
+    pos = { x = 0, y = 1 },
+    soul_pos = { x = 1, y = 1 },
+    can_use = function(self, card)
+        return true
+    end,
+    use = function(self, card, area, copier) 
+        local hpt = card.ability.extra
+        hpt.state = hpt.state == "paint" and "white" or "paint"
+        card:juice_up(0.3, 0.3)
+    end,
+    keep_on_use = function(self, card)
+        return true
+    end,
+    config = {
+        extra = {
+            state = "paint",
+            list_of_enhancements = {}
+        }
+    },
+    loc_vars = function(self, info_queue, card)
+		local hpt = card.ability.extra
+		local vars = {
+            hpt.list_of_enhancements[#hpt.list_of_enhancements] or localize("k_none")
+		}            
+        return {key = "[REDACTED]Autumn_stocking_improvised_painter_"..hpt.state, vars = vars }
+    end,
+    calculate = function(self, card, context)
+        local hpt = card.ability.extra
+        if hpt.state == "paint" then
+        -- paintbrush
+            if StockingStuffer.first_calculation and context.individual and context.cardarea == G.play and not context.end_of_round then
+                local carde = context.other_card
+                if carde.config.center.key == "c_base" and next(hpt.list_of_enhancements) then
+                    G.E_MANAGER:add_event(Event({
+                        trigger = 'immediate',
+                        func = function()  
+                            carde:flip()
+                            play_sound('card1', percent)
+                            carde:juice_up(0.3, 0.3)
+                            return true
+                        end
+                    }))
+                    delay(0.1)
+                    G.E_MANAGER:add_event(Event({
+                       trigger = 'immediate',
+                        func = function()  
+                            carde:set_ability(hpt.list_of_enhancements[#hpt.list_of_enhancements])
+                            return true
+                        end
+                    }))
+                    card_eval_status_text(card, 'extra', nil, nil, nil,
+		            { message = localize('imp_painter_enhance'), colour = G.C.IMPORTANT})
+                    delay(0.1)
+                    G.E_MANAGER:add_event(Event({
+                        trigger = 'immediate',
+                        func = function()  
+                            carde:flip()
+                            play_sound('tarot2', percent, 0.6)
+                            carde:juice_up(0.3, 0.3)
+                            return true
+                        end
+                    }))
+                    hpt.list_of_enhancements[#hpt.list_of_enhancements] = nil
+                end
+            end
+        else
+        -- whiteout
+            if StockingStuffer.second_calculation and context.individual and context.cardarea == G.play and not context.end_of_round then
+                local carde = context.other_card
+                if carde.config.center.key ~= "c_base" then
+                    table.insert(hpt.list_of_enhancements, context.other_card.config.center.key)
+                    G.E_MANAGER:add_event(Event({
+                        trigger = 'immediate',
+                        func = function()  
+                            carde:flip()
+                            play_sound('card1', percent)
+                            carde:juice_up(0.3, 0.3)
+                            return true
+                        end
+                    }))
+                    delay(0.1)
+                    G.E_MANAGER:add_event(Event({
+                    func = function()
+                        carde:set_ability('c_base', nil, true)
+                        return true
+                    end
+                    }))
+                    card_eval_status_text(card, 'extra', nil, nil, nil,
+		            { message = localize('imp_painter_strip'), colour = G.C.IMPORTANT})
+                    delay(0.1)
+                    G.E_MANAGER:add_event(Event({
+                        trigger = 'immediate',
+                        func = function()  
+                            carde:flip()
+                            play_sound('tarot2', percent, 0.6)
+                            carde:juice_up(0.3, 0.3)
+                            return true
+                        end
+                    }))
+                end
+            end
+        end
+    end
 })
