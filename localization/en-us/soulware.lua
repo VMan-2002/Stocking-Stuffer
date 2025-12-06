@@ -1,6 +1,19 @@
 return {
+    misc = {
+        dictionary = {
+            soulware_mult = 'Mult',
+            soulware_chips = 'Chips'
+        }
+    },
     descriptions = {
         stocking_present = {
+            Soulware1_stocking_present = {
+               name = '{V:1}My Gift Box',
+               text = {
+                    '  {C:inactive}Question is  ',
+                   ' {C:inactive}is it mine, or yours? ',
+                }
+            },
             Soulware1_stocking_glpyh = {
                 -- glyph, as in a representation of a character (just any typographic marking)
                 name = 'Glpyh',
@@ -57,14 +70,14 @@ return {
                 }
             },
         },
-        },
         stocking_wrapped_present = {
            Soulware1_stocking_present = {
-               name = '{V:1}My Gift Box',
+               name = 'My Gift Box',
                text = {
                     '  {C:inactive}Question is  ',
                    ' {C:inactive}is it mine, or yours? ',
                 }
             },
         }
+        },
     }

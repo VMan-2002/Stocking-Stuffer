@@ -85,10 +85,10 @@ StockingStuffer.Present({
 
     key = 'glpyh', -- keys are prefixed with 'display_name_stocking_' for reference
     pronouns = 'it_its',
-    config = { extra = { add = 2, score_param = "Mult", chip_mode = false, score_color = G.C.MULT }, },
+    config = { extra = { add = 2, score_param = "soulware_mult", chip_mode = false, score_color = G.C.MULT }, },
     loc_vars = function(self, info_queue, card)
         return { vars = {
-             card.ability.extra.add,  (card.ability.extra.score_param == "Mult" and card.ability.extra.add / 10) or (card.ability.extra.score_param == "Chips" and card.ability.extra.add / 100), card.ability.extra.score_param, card.ability.extra.chip_mode,
+             card.ability.extra.add,  (card.ability.extra.score_param == "soulware_mult" and card.ability.extra.add / 10) or (card.ability.extra.score_param == "soulware_chips" and card.ability.extra.add / 100), localize(card.ability.extra.score_param), card.ability.extra.chip_mode,
              colours = { card.ability.extra.score_color }
         } }
     end,
@@ -102,11 +102,11 @@ StockingStuffer.Present({
         if card.ability.extra.chip_mode then
             card.ability.extra.add = card.ability.extra.add*7.5
             card.ability.extra.score_color = G.C.CHIPS
-            card.ability.extra.score_param = "Chips"
+            card.ability.extra.score_param = "soulware_chips"
         else
             card.ability.extra.add = card.ability.extra.add/7.5
             card.ability.extra.score_color = G.C.MULT
-            card.ability.extra.score_param = "Mult"
+            card.ability.extra.score_param = "soulware_mult"
         end
     end,
     keep_on_use = function(self, card)
