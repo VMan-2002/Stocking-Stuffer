@@ -140,6 +140,9 @@ function Game:update(dt, ...)
             else
                 SMODS.debuff_card(v, false, "discard_bin")
             end
+            if c_area[k].config.center.key == "[REDACTED]Autumn_stocking_discard_bin" then
+                c_area[k].children.center:set_sprite_pos { x = 3, y = ((not c_area[k - 1] or c_area[k].debuff) and 1 or 0) }
+            end
         end
     end
     return ret
