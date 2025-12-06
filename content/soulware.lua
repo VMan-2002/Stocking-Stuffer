@@ -246,9 +246,15 @@ StockingStuffer.Present({
         for i = 1, #G.stocking_present.cards do
             local v = G.stocking_present.cards[i]
             if v == card then
-               local right = G.stocking_present.cards[i+1]
-               local newcard = SMODS.add_card({ area = G.stocking_present, set = 'stocking_present', key = right.config.center.key })
-               newcard.MGB_clay_spawned = true
+                local right = G.stocking_present.cards[i+1]
+                local newcard = SMODS.add_card({ area = G.stocking_present, set = 'stocking_present', key = right.config.center.key })
+                if not newcard.ability then
+                    newcard.ability = {}
+                end
+                if not newcard.ability.extra then
+                    newcard.ability.extra = {}
+                end
+                newcard.ability.extra.MGB_clay_spawned = true
             end
         end
         -- keep_on_use returning false will break the effect, so i have to destroy it here instead
@@ -319,7 +325,7 @@ SMODS.DrawStep {
     key = 'evil_clay_thing',
     order = 25, -- depends on when you want it to apply (layering thing)
     func = function(self, layer)
-        if self.MGB_clay_spawned then
+        if self.ability and self.ability.extra and type(self.ability.extra) == "table" and self.ability.extra.MGB_clay_spawned then
             self.children.center:draw_shader('stocking_clay', nil, self.ARGS.send_to_shader) -- used for anything almost else
         end
     end,
