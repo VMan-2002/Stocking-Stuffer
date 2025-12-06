@@ -104,7 +104,7 @@ StockingStuffer.Present({
     atlas = display_name..'_presents',
     config = { extra = { antes_left = 4 } },
     pos = { x = 3, y = 0 },
-    pixel_size = { w = 57, h = 82 },
+    pixel_size = { w = 57, h = 81 },
 
     loc_vars = function(self, info_queue, card)
         info_queue[#info_queue + 1] = G.P_CENTERS["notmario_stocking_diamond"]
