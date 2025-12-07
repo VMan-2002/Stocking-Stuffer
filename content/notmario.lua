@@ -12,10 +12,250 @@ StockingStuffer.Developer({
     colour = HEX('ff6868')
 })
 
+local function draw_3d_tri (v1, v2, v3, x, y, rx, ry, scale, force_col, shaded)
+    -- temp clone
+    local v1 = {v1[1], v1[2], v1[3]}
+    local v2 = {v2[1], v2[2], v2[3]}
+    local v3 = {v3[1], v3[2], v3[3]}
+
+    -- rotate around y axis
+    for _, n in pairs({v1,v2,v3}) do
+        local m = {n[1],n[2],n[3]}
+        n[1] = m[1] * math.cos(ry) - m[3] * math.sin(ry)
+        n[2] = m[2]
+        n[3] = m[1] * math.sin(ry) + m[3] * math.cos(ry)
+    end
+
+    -- rotate around x axis
+    for _, n in pairs({v1,v2,v3}) do
+        local m = {n[1],n[2],n[3]}
+        n[1] = m[1]
+        n[2] = m[2] * math.cos(rx) - m[3] * math.sin(rx)
+        n[3] = m[2] * math.sin(rx) + m[3] * math.cos(rx)
+    end
+
+    -- calc normal
+    local a = { v2[1] - v1[1], v2[2] - v1[2], v2[3] - v1[3] }
+    local b = { v3[1] - v1[1], v3[2] - v1[2], v3[3] - v1[3] }
+
+    local d1 = v1[3] * 0.1 + 1
+    local d2 = v2[3] * 0.1 + 1
+    local d3 = v3[3] * 0.1 + 1
+
+    local normal_x = a[2] * b[3] - a[3] * b[2]
+    local normal_y = a[3] * b[1] - a[1] * b[3]
+    local normal_z = a[1] * b[2] - a[2] * b[1]
+
+    -- discard triangles facing away from the camera
+    -- unless unshaded
+    if normal_z < 0 and shaded then
+        return
+    end
+
+    local normal_mag = math.sqrt(normal_x * normal_x + normal_y * normal_y + normal_z * normal_z)
+    normal_x = normal_x / normal_mag
+    normal_y = normal_y / normal_mag
+    normal_z = normal_z / normal_mag
+
+    local v1 = { v1[1] * scale + x, v1[2] * scale + y }
+    local v2 = { v2[1] * scale + x, v2[2] * scale + y }
+    local v3 = { v3[1] * scale + x, v3[2] * scale + y }
+
+    local brightness = 0.6 + normal_y / 5 + normal_x / 11
+
+    love.graphics.setColor(force_col[1], force_col[2], force_col[3], force_col[4])
+    if shaded then
+        love.graphics.setColor(force_col[1] * brightness * 0.99, force_col[2] * brightness * 0.98, force_col[3] * brightness * 1.08, force_col[4])
+    end
+    love.graphics.polygon("fill", v1[1], v1[2], v2[1], v2[2], v3[1], v3[2])
+end
+
+local function draw_3d_model(card, size_mult, verts, cols, models)
+    local scale = G.TILESCALE*G.TILESIZE*G.CANV_SCALE
+    local size_scale = size_mult / 71
+    local size = G.TILESCALE*G.TILESIZE * size_scale
+
+    local x_pos = card.children.center.VT.x * scale + scale * size_scale
+    local y_pos = card.children.center.VT.y * scale + scale * size_scale
+
+    local x_tilt = (card.tilt_var.mx - x_pos) / 300
+    local y_tilt = (card.tilt_var.my - y_pos) / 300
+
+    card.ability.extra.old_x_tilt = (card.ability.extra.old_x_tilt * 3 + x_tilt) / 4
+    card.ability.extra.old_y_tilt = (card.ability.extra.old_y_tilt * 3 + y_tilt) / 4
+
+    x_tilt = card.ability.extra.old_x_tilt
+    y_tilt = card.ability.extra.old_y_tilt
+
+    local juice_scale = 1 + ((card.juice or {scale = 0}).scale or 0) * 3
+
+    if G.SETTINGS.GRAPHICS.shadows == 'On' then
+        for _, model in pairs(models) do
+            for i = 1, #model/3 do
+                local i = i * 3 - 2
+                draw_3d_tri(
+                    verts[model[i + 0]],
+                    verts[model[i + 1]],
+                    verts[model[i + 2]],
+                    x_pos,
+                    y_pos + size / 8,
+                    y_tilt,
+                    x_tilt,
+                    size * juice_scale * 1.1,
+                    { 0.05, 0.05, 0.05, 0.3 },
+                    false
+                )
+            end
+        end
+    end
+    
+    for _, model in pairs(models) do
+        for i = 1, #model/3 do
+            local i = i * 3 - 2
+            draw_3d_tri(
+                verts[model[i + 0]],
+                verts[model[i + 1]],
+                verts[model[i + 2]],
+                x_pos,
+                y_pos,
+                y_tilt,
+                x_tilt,
+                size * juice_scale * 1.1,
+                { 0.05, 0.05, 0.15, 1 },
+                false
+            )
+        end
+    end
+    
+    for i, model in ipairs(models) do
+        local col = cols[i]
+        for i = 1, #model/3 do
+            local i = i * 3 - 2
+            draw_3d_tri(
+                verts[model[i + 0]],
+                verts[model[i + 1]],
+                verts[model[i + 2]],
+                x_pos,
+                y_pos,
+                y_tilt,
+                x_tilt,
+                size * juice_scale,
+                { col[1], col[2], col[3], col[4] },
+                col[5]
+            )
+        end
+    end
+end
+
+local wrapped_verts = {
+{ -1.000000, 0.707107, -0.707107 }, 
+{ 1.000000, 0.707107, -0.707107 }, 
+{ -0.051891, -0.707107, 0.707107 }, 
+{ 0.051891, -0.707107, 0.707107 }, 
+{ -1.000000, 0.923890, -0.490324 }, 
+{ 1.000000, 0.923890, -0.490324 }, 
+{ -0.051891, -0.490324, 0.923889 }, 
+{ 0.051891, -0.490324, 0.923889 }, 
+{ -0.914221, 0.863234, -0.429669 }, 
+{ 0.914221, 0.863234, -0.429669 }, 
+{ -0.047440, -0.429669, 0.863234 }, 
+{ 0.047440, -0.429669, 0.863234 }, 
+{ -0.914221, 1.106681, -0.186222 }, 
+{ 0.914221, 1.106681, -0.186222 }, 
+{ -0.047440, -0.186223, 1.106681 }, 
+{ 0.047440, -0.186223, 1.106681 }, 
+{ -0.248724, 0.339733, -0.355311 }, 
+{ 0.248724, 0.339733, -0.355311 }, 
+{ -0.248724, -0.118826, 0.103247 }, 
+{ 0.248724, -0.118826, 0.103247 }, 
+{ 0.056438, 0.065674, -0.082824 }, 
+{ 0.143562, 0.065674, -0.082824 }, 
+{ 0.056438, -0.066263, 0.049114 }, 
+{ 0.143562, -0.066263, 0.049114 }, 
+{ -0.143562, 0.065674, -0.082824 }, 
+{ -0.056438, 0.065674, -0.082824 }, 
+{ -0.143562, -0.066263, 0.049114 }, 
+{ -0.056438, -0.066263, 0.049114 }, 
+{ -0.089792, 0.256011, -0.272138 }, 
+{ 0.089792, 0.256011, -0.272138 }, 
+{ -0.089792, 0.192415, -0.208542 }, 
+{ 0.089792, 0.192415, -0.208542 }, 
+{ 0.189792, 0.185301, -0.201427 }, 
+{ 0.139792, 0.139541, -0.155667 }, 
+{ -0.189792, 0.185301, -0.201427 }, 
+{ -0.139792, 0.139541, -0.155667 }, 
+{ -0.189792, 0.185301, -0.201427 }, 
+{ -0.189792, 0.139541, -0.155667 }, 
+{ 0.189792, 0.185301, -0.201427 }, 
+{ 0.189792, 0.139541, -0.155667 }, 
+}
+
+local wrapped_cols = { 
+    { 1.2, 0.4, 0.4, 1, true },
+    { 1.08, 1.08, 0.95, 1, false },
+    { 0.4, 0.4, 0.4, 1, false },
+}
+local wrapped_models = {{
+    3, 2, 1,
+    8, 10, 6,
+    4, 6, 2,
+    3, 5, 7,
+    3, 8, 4,
+    2, 5, 1,
+    11, 16, 12,
+    7, 9, 11,
+    7, 12, 8,
+    6, 9, 5,
+    14, 15, 13,
+    10, 13, 9,
+    12, 14, 10,
+    11, 13, 15,
+    3, 4, 2,
+    8, 12, 10,
+    4, 8, 6,
+    3, 1, 5,
+    3, 7, 8,
+    2, 6, 5,
+    11, 15, 16,
+    7, 5, 9,
+    7, 11, 12,
+    6, 10, 9,
+    14, 16, 15,
+    10, 14, 13,
+    12, 16, 14,
+    11, 9, 13,
+}, {
+    18, 19, 17,
+    18, 20, 19,
+}, {
+    22, 23, 21,
+    26, 27, 25,
+    30, 31, 29,
+    32, 33, 34,
+    31, 35, 29,
+    35, 38, 37,
+    33, 40, 34,
+    22, 24, 23,
+    26, 28, 27,
+    30, 32, 31,
+    32, 30, 33,
+    31, 36, 35,
+    35, 36, 38,
+    33, 39, 40,
+}}
+
 StockingStuffer.WrappedPresent({
     developer = display_name,
 
-    pos = { x = 0, y = 0 },
+    pos = { x = 99, y = 99 },
+    pixel_size = { w = 85, h = 85 },
+
+    config = { extra = { old_x_tilt = 0, old_y_tilt = 0, } },
+    draw = function(self, card, layer)
+        if card.config.center.discovered or card.bypass_discovery_center then
+            draw_3d_model(card, 71, wrapped_verts, wrapped_cols, wrapped_models)
+        end
+    end,
 })
 
 StockingStuffer.Present({
@@ -295,7 +535,9 @@ local tungsten_verts = {
     { -0.429728, -0.687709, -0.586775, },
 }
 
-local tungsten_faces = {
+local tungsten_cols = { { 0.99, 0.98, 1.08, 1, true } }
+local tungsten_models = {
+    {
     23, 18, 6,
     45, 3, 21,
     8, 6, 26,
@@ -412,62 +654,7 @@ local tungsten_faces = {
     38, 47, 52,
     58, 29, 7,
     60, 25, 28,
-}
-
-local function draw_3d_tri (v1, v2, v3, x, y, rx, ry, scale, force_col)
-    -- rotate around y axis
-    local v1 = {v1[1], v1[2], v1[3]}
-    local v2 = {v2[1], v2[2], v2[3]}
-    local v3 = {v3[1], v3[2], v3[3]}
-
-    for _, n in pairs({v1,v2,v3}) do
-        local m = {n[1],n[2],n[3]}
-        n[1] = m[1] * math.cos(ry) - m[3] * math.sin(ry)
-        n[2] = m[2]
-        n[3] = m[1] * math.sin(ry) + m[3] * math.cos(ry)
-    end
-
-    for _, n in pairs({v1,v2,v3}) do
-        local m = {n[1],n[2],n[3]}
-        n[1] = m[1]
-        n[2] = m[2] * math.cos(rx) - m[3] * math.sin(rx)
-        n[3] = m[2] * math.sin(rx) + m[3] * math.cos(rx)
-    end
-
-    -- calc normal
-    local a = { v2[1] - v1[1], v2[2] - v1[2], v2[3] - v1[3] }
-    local b = { v3[1] - v1[1], v3[2] - v1[2], v3[3] - v1[3] }
-
-    local d1 = v1[3] * 0.1 + 1
-    local d2 = v2[3] * 0.1 + 1
-    local d3 = v3[3] * 0.1 + 1
-
-    local normal_x = a[2] * b[3] - a[3] * b[2]
-    local normal_y = a[3] * b[1] - a[1] * b[3]
-    local normal_z = a[1] * b[2] - a[2] * b[1]
-
-    -- discard triangles facing away from the camera
-    if normal_z < 0 then
-        return
-    end
-
-    local normal_mag = math.sqrt(normal_x * normal_x + normal_y * normal_y + normal_z * normal_z)
-    normal_x = normal_x / normal_mag
-    normal_y = normal_y / normal_mag
-    normal_z = normal_z / normal_mag
-
-    local v1 = { v1[1] * scale + x, v1[2] * scale + y }
-    local v2 = { v2[1] * scale + x, v2[2] * scale + y }
-    local v3 = { v3[1] * scale + x, v3[2] * scale + y }
-
-    local brightness = 0.6 + normal_y / 5 + normal_x / 11
-
-    love.graphics.setColor(brightness * 0.99,brightness * 0.98,brightness * 1.08)
-    if #force_col > 0 then
-        love.graphics.setColor(force_col[1], force_col[2], force_col[3], force_col[4])
-    end
-    love.graphics.polygon("fill", v1[1], v1[2], v2[1], v2[2], v3[1], v3[2])
-end
+}}
 
 StockingStuffer.Present({
     developer = display_name,
@@ -483,76 +670,7 @@ StockingStuffer.Present({
     end,
     draw = function(self, card, layer)
         if card.config.center.discovered or card.bypass_discovery_center then
-            local scale = G.TILESCALE*G.TILESIZE*G.CANV_SCALE
-            local size_scale = 85 / 71
-            local size = G.TILESCALE*G.TILESIZE * size_scale
-
-            local x_pos = card.children.center.VT.x * scale + scale * size_scale
-            local y_pos = card.children.center.VT.y * scale + scale * size_scale
-
-            local x_tilt = (card.tilt_var.mx - x_pos) / 300
-            local y_tilt = (card.tilt_var.my - y_pos) / 300
-
-            card.ability.extra.old_x_tilt = (card.ability.extra.old_x_tilt * 3 + x_tilt) / 4
-            card.ability.extra.old_y_tilt = (card.ability.extra.old_y_tilt * 3 + y_tilt) / 4
-
-            x_tilt = card.ability.extra.old_x_tilt
-            y_tilt = card.ability.extra.old_y_tilt
-
-            local juice_scale = 1 + ((card.juice or {scale = 0}).scale or 0) * 3
-
-            if G.SETTINGS.GRAPHICS.shadows == 'On' then
-                for i = 1, #tungsten_faces/3 do
-                    local i = i * 3 - 2
-                    draw_3d_tri(
-                        tungsten_verts[tungsten_faces[i + 0]],
-                        tungsten_verts[tungsten_faces[i + 1]],
-                        tungsten_verts[tungsten_faces[i + 2]],
-                        x_pos,
-                        y_pos + size / 8,
-                        -- tungsten_dt * 0.0724874 + y_tilt,
-                        -- tungsten_dt * 0.1689412 + x_tilt,
-                        y_tilt,
-                        x_tilt,
-                        size * juice_scale * 1.05,
-                        { 0.05, 0.05, 0.05, 0.3 }
-                    )
-                end
-            end
-            
-            for i = 1, #tungsten_faces/3 do
-                local i = i * 3 - 2
-                draw_3d_tri(
-                    tungsten_verts[tungsten_faces[i + 0]],
-                    tungsten_verts[tungsten_faces[i + 1]],
-                    tungsten_verts[tungsten_faces[i + 2]],
-                    x_pos,
-                    y_pos,
-                    -- tungsten_dt * 0.0724874 + y_tilt,
-                    -- tungsten_dt * 0.1689412 + x_tilt,
-                    y_tilt,
-                    x_tilt,
-                    size * juice_scale * 1.05,
-                    { 0.05, 0.05, 0.15, 1 }
-                )
-            end
-            
-            for i = 1, #tungsten_faces/3 do
-                local i = i * 3 - 2
-                draw_3d_tri(
-                    tungsten_verts[tungsten_faces[i + 0]],
-                    tungsten_verts[tungsten_faces[i + 1]],
-                    tungsten_verts[tungsten_faces[i + 2]],
-                    x_pos,
-                    y_pos,
-                    -- tungsten_dt * 0.0724874 + y_tilt,
-                    -- tungsten_dt * 0.1689412 + x_tilt,
-                    y_tilt,
-                    x_tilt,
-                    size * juice_scale,
-                    {}
-                )
-            end
+            draw_3d_model(card, 85, tungsten_verts, tungsten_cols, tungsten_models)
         end
     end,
 })
