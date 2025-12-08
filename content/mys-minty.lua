@@ -95,7 +95,7 @@ StockingStuffer.Present({ --cute little jingle ball
 StockingStuffer.Present({ --nip toy
     developer = display_name,
     key = 'catnip',
-    pos = { x = 5, y = 0 },
+    pos = { x = 2, y = 0 },
     -- atlas defaults to 'stocking_display_name_presents' as created earlier but can be overriden
 
     loc_vars = function (self, info_queue, card)
@@ -350,12 +350,12 @@ StockingStuffer.Present({ --string from the wand
         },
     },
     calculate = function(self, card, context)
-        if context.before and StockingStuffer.first_calculation then
+        if context.initial_scoring_step and StockingStuffer.first_calculation then
             return {
                 mult = card.ability.extra.mult,
             }
         end
-        if context.after and StockingStuffer.second_calculation then
+        if context.final_scoring_step and StockingStuffer.second_calculation then
             return {
                 xmult = card.ability.extra.xmult
             }
