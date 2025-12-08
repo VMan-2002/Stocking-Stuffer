@@ -1,6 +1,7 @@
 StockingStuffer = SMODS.current_mod
 SMODS.handle_loc_file(SMODS.current_mod.path, SMODS.current_mod.id)
 assert(SMODS.load_file('PotatoPatchUtils/info_menu.lua'))()
+assert(SMODS.load_file('PotatoPatchUtils/credits.lua'))()
 PotatoPatchUtils.LOC.init()
 
 -- State for Present Area visibility
@@ -22,14 +23,8 @@ StockingStuffer.colours = {
 --#region Objects
 
     --#region Developers
-    StockingStuffer.Developers = {}
-    StockingStuffer.Developer = Object:extend()
-    function StockingStuffer.Developer:init(args)
-        self.name = args.name
-        self.colour = args.colour
-
-        StockingStuffer.Developers[args.name] = self
-    end
+    StockingStuffer.Developers = PotatoPatchUtils.Developers
+    StockingStuffer.Developer = PotatoPatchUtils.Developer
     --#endregion
 
     --#region WrappedPresent
