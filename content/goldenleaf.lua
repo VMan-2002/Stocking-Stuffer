@@ -216,7 +216,7 @@ function Game:update(dt, ...)
         end
         if StockingStuffer.GlVars.DittoTransform == true and next(dittos) then
             for k, ditto in ipairs(dittos) do
-                local transformkey = G.P_CENTER_POOLS.stocking_present[pseudorandom("j",1,#G.P_CENTER_POOLS.stocking_present)].key
+                local transformkey = pseudorandom_element(G.P_CENTER_POOLS.stocking_present, "penis").key
                 G.E_MANAGER:add_event(Event({
                     trigger = 'immediate',
                     func = function()  
