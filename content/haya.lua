@@ -38,8 +38,8 @@ StockingStuffer.Developer({
 -- Just in case if Aiko's name is not yet loaded...
 if not StockingStuffer.aikoyori then
 	StockingStuffer.Developer({
-	    name = 'Aikoyori', -- DO NOT CHANGE
-	    colour = HEX('5ebb55')
+		name = 'Aikoyori', -- DO NOT CHANGE
+		colour = HEX('5ebb55')
 	})
 end
 
@@ -72,7 +72,7 @@ StockingStuffer.Present({
 	pos = { x = 1, y = 0 },
 	pixel_size = { w = 56, h = 74 },
 	config = { extra = { disabled = false } },
-	artist = {'Aikoyori'},
+	artist = { 'Aikoyori' },
 	disable_use_animation = true, -- We manually move the various things ourselves so disable thissss
 	can_use = function(self, card)
 		return G.jokers and G.jokers.highlighted and #G.jokers.highlighted == 1 and G.STATE ~= G.STATES.SELECTING_HAND and
@@ -170,10 +170,11 @@ StockingStuffer.Present({
 })
 
 G.FUNCS.draw_from_discard_to_deck_no_event = function(card_count)
-    local discard_count = card_count
-    for i=1, discard_count do --draw cards from deck
-        draw_card(G.discard, G.deck, i*100/discard_count,'up', nil ,nil, 0.005, i%2==0, nil, math.max((21-i)/20,0.7))
-    end
+	local discard_count = card_count
+	for i = 1, discard_count do --draw cards from deck
+		draw_card(G.discard, G.deck, i * 100 / discard_count, 'up', nil, nil, 0.005, i % 2 == 0, nil,
+			math.max((21 - i) / 20, 0.7))
+	end
 end
 
 local function ssr_revive(card)
@@ -231,7 +232,7 @@ local function ssr_revive(card)
 									end
 								end
 								return true
-									end
+							end
 						})
 						draw_card(G.play, G.stocking_present, nil, nil, nil, card)
 
@@ -239,7 +240,6 @@ local function ssr_revive(card)
 						G.CONTROLLER.locked = nil
 						G.STATE_COMPLETE = false
 						return true
-
 					end
 				})
 			end
@@ -299,7 +299,7 @@ StockingStuffer.Present({
 	pixel_size = { w = 38, h = 48 },
 	display_size = { w = 38 * 1.25, h = 48 * 1.25 },
 	config = { extra = { ante = 1 } },
-	artist = {'Aikoyori'},
+	artist = { 'Aikoyori' },
 	loc_vars = function(self, info_queue, card)
 		return {
 			vars = { card.ability.extra.ante }
@@ -341,9 +341,10 @@ local EFFECT_RAPID = 1
 local EFFECT_SPREAD = 2
 local EFFECT_FLAME = 3
 local EFFECT_HOMING = 4
-local EFFECT_MAX = EFFECT_HOMING
+local EFFECT_BOOMERANG = 5
+local EFFECT_MAX = EFFECT_BOOMERANG
 
-local effects = { "rapid", "spread", "flame", "homing" }
+local effects = { "rapid", "spread", "flame", "homing", "boomerang" }
 
 
 local function mergeTables(dest, source)
@@ -384,7 +385,7 @@ StockingStuffer.Present({
 	pos = { x = 3, y = 0 },
 	pixel_size = { w = 71, h = 84 },
 	config = { extra = { count = 7, remaining = 0, remove = false } },
-	artist = {'Aikoyori'},
+	artist = { 'Aikoyori' },
 	loc_vars = function(self, info_queue, card)
 		return {
 			vars = { card.ability.extra.count, card.ability.extra.remaining }
@@ -394,12 +395,13 @@ StockingStuffer.Present({
 	---@param card Card|table
 	---@param context CalcContext|table
 	calculate = function(self, card, context)
+		if context.haya_no_score_boomerang then return end
 		if context.individual and context.cardarea == G.play and not context.end_of_round and StockingStuffer.second_calculation then
 			card.ability.extra.remaining = card.ability.extra.remaining + 1
 			if card.ability.extra.remaining >= 7 then
 				card.ability.extra.remaining = 0
 				local effect = pseudorandom(G.GAME.round_resets.ante .. "_chameleonblaster_effect", EFFECT_RAPID,
-					EFFECT_HOMING)
+					EFFECT_MAX)
 				local ret = {
 					message = localize('haya_snap_' .. effects[effect]),
 					sound = 'stocking_haya_snap_' .. effects[effect],
@@ -469,31 +471,43 @@ StockingStuffer.Present({
 						v.ability.haya_destroy = true
 						r = r.extra
 					end
-					card.ability.extra.remove = true
+					-- card.ability.extra.remove = true
 					ret.extra = ogr
 				elseif effect == EFFECT_HOMING then -- Homing Gun
 					G.playing_card = (G.playing_card or 0) + 1
 					---@type balatro.Card|table
 					local c = copy_card(context.other_card)
-					c:set_edition({polychrome = true}, true, true)
+					c:set_edition({ polychrome = true }, true, true)
 					c:add_to_deck()
 					c.states.visible = nil
 					c:highlight(true)
 					G.play:emplace(c)
-					context.scoring_hand[#context.scoring_hand+1] = c
+					context.scoring_hand[#context.scoring_hand + 1] = c
 					G.deck.config.card_limit = G.deck.config.card_limit + 1
-                    table.insert(G.playing_cards, c)
-                    ret.func = function()
-                   		G.E_MANAGER:add_event(Event({
-                            func = function()
-                             	c:start_materialize()
-                                return true
-                            end
-                        }))
-                    end
+					table.insert(G.playing_cards, c)
+					ret.func = function()
+						G.E_MANAGER:add_event(Event({
+							func = function()
+								c:start_materialize()
+								return true
+							end
+						}))
+					end
 					ret.extra = {
-						message = "Cloned!", sound = "stocking_haya_snap_revolver_homing", pitch = 1,
-						playing_cards_created = {c}
+						message = "Cloned!",
+						sound = "stocking_haya_snap_revolver_homing",
+						pitch = 1,
+						playing_cards_created = { c }
+					}
+				elseif effect == EFFECT_BOOMERANG then
+					ret.extra = {
+						func = function()
+							for _, c in ipairs(context.scoring_hand) do
+								context.haya_no_score_boomerang = true
+								SMODS.score_card(c, context)
+								context.haya_no_score_boomerang = nil
+							end
+						end
 					}
 				end
 				return ret

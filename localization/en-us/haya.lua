@@ -14,6 +14,7 @@ return {
 			haya_snap_spread = "Spread Shot",
 			haya_snap_flame = "Flamethrower",
 			haya_snap_homing = "Homing Gun",
+			haya_snap_boomerang = "Boomerang Slicer",
 		}
 	},
 	descriptions = {
@@ -63,7 +64,7 @@ return {
 					"Every {C:attention}#1#th{} played card",
 					"has a {C:dark_edition,E:1}random effect{}",
 					"{C:inactive}(#2#/#1# cards)",
-					"{stocking}before{}"
+					"{stocking}after{}"
 				}
 			}
 		}
