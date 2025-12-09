@@ -29,7 +29,7 @@ return {
                     },
                     {
                         "{C:inactive}You may use this present to{}",
-                        "{C:inactive}toggle it\'s effect{}",
+                        "{C:inactive}toggle its effect{}",
                         "{stocking}#2#{}"
                     }
                 }
