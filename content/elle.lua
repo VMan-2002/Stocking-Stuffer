@@ -265,7 +265,7 @@ StockingStuffer.Present({
 		end
 		
         if context.joker_main and card.ability.extra.chips > 0 and StockingStuffer.first_calculation then
-            return { chips = -chips }
+            return { chips = -card.ability.extra.chips }
         end
 	end
 })
