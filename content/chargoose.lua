@@ -29,6 +29,7 @@ StockingStuffer.WrappedPresent({
 
 StockingStuffer.Present({
     developer = display_name,
+    coder = {"mys. minty"},
     key = 'plush',
     pos = { x = 0, y = 0 },
 
@@ -74,6 +75,7 @@ StockingStuffer.Present({
 
 StockingStuffer.Present({
     developer = display_name, -- DO NOT CHANGE
+    coder = {"mys. minty"},
 
     key = 'f',
     pos = {x=1, y=0},
@@ -158,6 +160,7 @@ SMODS.Keybind{
 
 StockingStuffer.Present({
     developer = display_name, -- DO NOT CHANGE
+    coder = {"mys. minty"},
 
     key = 'msgoose',
     pos = {x=3, y=0},
@@ -264,6 +267,7 @@ end
 
 StockingStuffer.Present({
     developer = display_name, -- DO NOT CHANGE
+    coder = {"mys. minty"},
 
     key = 'portablehome',
     pos = {x=2, y=0},
@@ -355,6 +359,7 @@ end
 
 StockingStuffer.Present({
     developer = display_name, -- DO NOT CHANGE
+    coder = {"mys. minty"},
 
     key = 'howtonaneinf',
     pos = {x=4, y=0},
