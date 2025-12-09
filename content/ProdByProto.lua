@@ -5,9 +5,6 @@ local display_name = 'ProdByProto'
 
 StockingStuffer.colours.active = mix_colours(G.C.GREEN, G.C.JOKER_GREY, 0.8)
 StockingStuffer.colours.inactive = mix_colours(G.C.RED, G.C.JOKER_GREY, 0.8)
-SMODS.current_mod.optional_features = {
-    retrigger_joker = true
-}
 
 
 -- Present Atlas Template
@@ -277,6 +274,47 @@ StockingStuffer.Present({
         if context.end_of_round and StockingStuffer.second_calculation then
             G.GAME.proot_psold = nil
         end
+    end
+
+})
+
+StockingStuffer.Present({
+    developer = display_name, -- DO NOT CHANGE
+    key = 'mince_pie', -- keys are prefixed with 'display_name_stocking_' for reference
+    -- You are encouraged to use the localization file for your name and description, this is here as an example
+    -- loc_txt = {
+    --     name = 'Example Present',
+    --     text = {
+    --         'Does nothing'
+    --     }
+    -- },
+    pos = { x = 4, y = 0 },
+    -- atlas defaults to 'stocking_display_name_presents' as created earlier but can be overriden
+    config = {
+        extra = {
+            numer = 1,
+            denom = 6,
+            xCheer = 1.25,
+            
+        },
+    },
+    loc_vars = function(self, info_queue, card)
+        return { vars = { card.ability.extra.numer, card.ability.extra.denom, card.ability.extra.xCheer } }
+    end,
+
+    -- calculate is completely optional, delete if your present does not need it
+    calculate = function(self, card, context)
+        -- check context and return appropriate values
+        -- StockingStuffer.first_calculation is true before jokers are calculated
+        -- StockingStuffer.second_calculation is true after jokers are calculated
+        if context.joker_main and StockingStuffer.first_calculation then
+            return {
+                xmult = card.ability.extra.xmult,
+                message = localize("hornet_drip"),
+            }
+        end
+
+
     end
 
 })
