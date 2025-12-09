@@ -248,10 +248,6 @@ StockingStuffer.Present({
     display_size = { w = 45 * 1.2, h = 48 * 1.2 },
 
     loc_vars = function(self, info_queue, card)
-		local count = -3
-		for k, v in pairs(SMODS.Mods) do
-			if v.can_load then count = count + 1 end
-		end
         return {
             vars = { card.ability.extra.chips, card.ability.extra.mod }
         }
@@ -264,8 +260,8 @@ StockingStuffer.Present({
 			return { message = "-"..card.ability.extra.mod }
 		end
 		
-        if context.joker_main and card.ability.extra.chips > 0 and StockingStuffer.first_calculation then
-            return { chips = -card.ability.extra.chips }
+        if context.joker_main and card.ability.extra.chips > 0 and StockingStuffer.second_calculation then
+            return { chips = -math.min(card.ability.extra.chips,hand_chips) }
         end
 	end
 })
