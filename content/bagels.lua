@@ -19,6 +19,19 @@ StockingStuffer.WrappedPresent {
 
     display_size = { w = 71, h = 95 },
     pixel_size = { w = 71 * 71 / 103, h = 95 },
+    set_sprites = function(self, card, front)
+        card.children.tape = Sprite(card.T.x, card.T.y, card.T.w, card.T.h,
+            G.ASSET_ATLAS.stocking_BakersDozenBagels_presents, { x = 0, y = 1 })
+        card.children.tape.states.hover = card.states.hover
+        card.children.tape.states.click = card.states.click
+        card.children.tape.states.drag = card.states.drag
+        card.children.tape.states.collide.can = false
+        card.children.tape:set_role { major = card, role_type = 'Glued', draw_major = card }
+        card.children.tape.scale.x = card.children.tape.scale.x * 71 / 103
+        function card.children.tape:draw()
+            self:draw_shader('voucher', nil, card.ARGS.send_to_shader)
+        end
+    end
 }
 
 --#region Gift Receipt
