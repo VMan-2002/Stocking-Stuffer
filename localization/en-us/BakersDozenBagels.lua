@@ -80,6 +80,13 @@ return {
                     '{C:legendary}Legendary {C:attention}Joker',
                     '{stocking}usable'
                 }
+            },
+            BakersDozenBagels_stocking_CashMoney = {
+                name = 'Cash Money',
+                text = {
+                    'Sets money to {C:money}$#1#',
+                    '{stocking}usable'
+                }
             }
         },
         stocking_wrapped_present = {

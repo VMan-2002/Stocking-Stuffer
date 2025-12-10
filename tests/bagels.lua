@@ -465,3 +465,67 @@ Balatest.TestPlay {
 }
 
 --#endregion
+
+--#region Cash Money
+Balatest.TestPlay {
+    name = 'BakersDozenBagels_cash_money_can_use',
+    category = { 'BakersDozenBagels', 'BakersDozenBagels_cash_money' },
+
+    execute = function()
+        Balatest.open_present 'BakersDozenBagels_stocking_CashMoney'
+        Balatest.wait()
+        Balatest.wait_for_input()
+    end,
+    assert = function()
+        Balatest.assert(G.stocking_present.cards[1]:can_use_consumeable())
+    end
+}
+Balatest.TestPlay {
+    name = 'BakersDozenBagels_cash_money_use',
+    category = { 'BakersDozenBagels', 'BakersDozenBagels_cash_money' },
+
+    dollars = 0,
+    execute = function()
+        Balatest.open_present 'BakersDozenBagels_stocking_CashMoney'
+        Balatest.wait()
+        Balatest.wait_for_input()
+        Balatest.use(function() return G.stocking_present.cards[1] end)
+    end,
+    assert = function()
+        Balatest.assert_eq(#G.stocking_present.cards, 0)
+        Balatest.assert_dollars(20)
+    end
+}
+Balatest.TestPlay {
+    name = 'BakersDozenBagels_cash_money_use_debt',
+    category = { 'BakersDozenBagels', 'BakersDozenBagels_cash_money' },
+
+    dollars = -100,
+    execute = function()
+        Balatest.open_present 'BakersDozenBagels_stocking_CashMoney'
+        Balatest.wait()
+        Balatest.wait_for_input()
+        Balatest.use(function() return G.stocking_present.cards[1] end)
+    end,
+    assert = function()
+        Balatest.assert_eq(#G.stocking_present.cards, 0)
+        Balatest.assert_dollars(20)
+    end
+}
+Balatest.TestPlay {
+    name = 'BakersDozenBagels_cash_money_use_rich',
+    category = { 'BakersDozenBagels', 'BakersDozenBagels_cash_money' },
+
+    dollars = 100,
+    execute = function()
+        Balatest.open_present 'BakersDozenBagels_stocking_CashMoney'
+        Balatest.wait()
+        Balatest.wait_for_input()
+        Balatest.use(function() return G.stocking_present.cards[1] end)
+    end,
+    assert = function()
+        Balatest.assert_eq(#G.stocking_present.cards, 0)
+        Balatest.assert_dollars(20)
+    end
+}
+--#endregion

@@ -193,3 +193,37 @@ StockingStuffer.Present {
     end
 }
 --#endregion
+
+--#region Cash Money
+StockingStuffer.Present {
+    developer = display_name,
+
+    key = 'CashMoney',
+    pos = { x = 1, y = 1 },
+
+    display_size = { w = 71, h = 95 },
+    pixel_size = { w = 71 * 71 / 103, h = 95 },
+
+    config = { extra = 20 },
+    loc_vars = function(self, info_queue, card)
+        return { vars = { card.ability.extra } }
+    end,
+
+    can_use = function(self, card)
+        return true
+    end,
+    use = function(self, card)
+        G.E_MANAGER:add_event(Event {
+            trigger = 'after',
+            delay = 0.4,
+            func = function()
+                play_sound('timpani')
+                card:juice_up(0.3, 0.5)
+                ease_dollars(20 - G.GAME.dollars, true)
+                return true
+            end
+        })
+        delay(0.6)
+    end
+}
+--#endregion
