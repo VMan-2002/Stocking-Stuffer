@@ -4,7 +4,7 @@
 --	Fountain Pen (YEP)
 --	Mystery Star (YEP)
 --	Moss Blade (WAHOO)
---	Emki Plush (YES) (but i want to add 1 more cosmetic feature)
+--	Emki Plush (YES)
 --TODO do Kitty Seal / Kitty Stickers work with Splash??????????
 	--answer NO they dont(?)
 --TODO replace math.random
@@ -335,11 +335,15 @@ local mysterystar = StockingStuffer.Present({
     end
 })
 
---Animated
+--Update func
 local updateref = Game.update
 function Game.update(...)
 	updateref(...)
 	mysterystar.pos.x = math.floor(love.timer.getTime() * 12) % 8
+	if vman.plush_click_release and love.timer.getTime() > vman.plush_click_time then
+		play_sound("stocking_VMan_2002_squeaky2")
+		vman.plush_click_release = false
+	end
 end
 
 --Moss Blade
