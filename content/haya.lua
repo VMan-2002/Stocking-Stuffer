@@ -25,6 +25,12 @@ SMODS.Atlas({
 	--fps = 30,
 })
 
+-- Don't load this as an atlas as we manually draw it lmao
+local img = assert(NFS.newFileData(SMODS.current_mod.path .. "assets/misc/haya/irisu_jumpscare.png"),
+	('Failed to collect file data'))
+local irisu_data = assert(love.image.newImageData(img), "FUCK")
+local irisu = love.graphics.newImage(irisu_data)
+
 -- Developer Template
 -- Note: This object is how your WrappedPresent and Presents get linked
 StockingStuffer.Developer({
@@ -89,6 +95,8 @@ StockingStuffer.Present({
 		end
 	end,
 	use = function(self, card, area, copier)
+		G.GAME.haya_can_jumpscare = true -- :)
+
 		-- Delightfully assume we are using this in the context of using so move jokers into view
 		G.FUNCS.toggle_jokers_presents()
 
@@ -112,6 +120,23 @@ StockingStuffer.Present({
 		if G.round_eval and not G.round_eval.alignment.offset.py then
 			G.round_eval.alignment.offset.py = G.round_eval.alignment.offset.y
 			G.round_eval.alignment.offset.y = G.ROOM.T.y + 29
+		end
+
+		if math.floor(pseudorandom('irisu_jumpscare_factor', 0, 100)) == 0 or G.GAME.haya_force_irisu then
+			G.E_MANAGER:add_event(Event {
+				func = function()
+					G.GAME.haya_force_jumpscare = true
+					return true
+				end
+			}, "other")
+			G.E_MANAGER:add_event(Event {
+				trigger = 'after',
+				delay = 0.3,
+				func = function()
+					G.GAME.haya_force_jumpscare = nil
+					return true
+				end
+			}, "other")
 		end
 
 		G.E_MANAGER:add_event(Event {
@@ -168,6 +193,28 @@ StockingStuffer.Present({
 		return true
 	end
 })
+
+-- Override Game:draw() to draw irisu if possible lmao
+local draw = Game.draw
+---@diagnostic disable-next-line
+function Game:draw()
+	draw(self)
+	if G and G.GAME and G.GAME.haya_can_jumpscare and ((not love.window.hasFocus()) or G.GAME.haya_force_jumpscare) then
+		local scaleX = love.graphics.getWidth() / irisu:getWidth()
+		local scaleY = love.graphics.getHeight() / irisu:getHeight()
+		local scale = math.max(scaleX, scaleY)
+		local screenCenterX = love.graphics.getWidth() / 2
+		love.graphics.setBlendMode("multiply", "premultiplied")
+		-- Red background-ish
+		love.graphics.setColor(darken(G.C.RED, 0.8))
+		love.graphics.rectangle("fill", 0, 0, love.graphics.getWidth(), love.graphics.getHeight())
+		-- One day you will have to answer for your actions
+		-- And god may not be so     merciful
+		love.graphics.setBlendMode("alpha")
+		love.graphics.setColor(1, 1, 1, 1)
+		love.graphics.draw(irisu, screenCenterX - ((irisu:getWidth() * scale) / 2), 0, 0, scale, scale)
+	end
+end
 
 G.FUNCS.draw_from_discard_to_deck_no_event = function(card_count)
 	local discard_count = card_count
