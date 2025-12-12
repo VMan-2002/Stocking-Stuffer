@@ -228,6 +228,8 @@ StockingStuffer.Present({
                             --9 Ladies Dancing
                             if StockingStuffer.GlobalPunk_Jimbmas == 3 and card.ability.trig == false then
                                 card.ability.trig = true
+                                card:juice_up(0.3, 0.5)
+                                card.children.center:set_sprite_pos({ x = 11, y = 0 })
                                 local queens = 0
                                 local cards = {}
                                 if G.playing_cards then
@@ -237,7 +239,7 @@ StockingStuffer.Present({
                                         end
                                     end
                                 end
-                                for i = 0, 9 - queens do
+                                for i = 1, 9 - queens do
                                     local _suit, _rank =
                                         pseudorandom_element(SMODS.Suits, pseudoseed('stocking_gp_jimbmas'))
                                         .card_key, 'Q'
@@ -274,6 +276,18 @@ StockingStuffer.Present({
                                     draw_card(G.play, G.deck, 90, 'up')
                                     G.deck.config.card_limit = G.deck.config.card_limit + 1
                                 end
+                                for i = 1, 9 - #cards do
+                                    SMODS.add_card {
+                                        set = 'Joker',
+                                        key_append = 'stocking_gp_jimbmas',
+                                        key = 'j_shoot_the_moon',
+                                        edition = 'e_negative'
+                                    }
+                                end
+                            end
+                            --10 Scores A'leaping
+                            if StockingStuffer.GlobalPunk_Jimbmas == 2 and card.ability.trig == false then
+                                card.ability.trig = true
                             end
                         end
                         return true
