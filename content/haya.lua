@@ -71,6 +71,9 @@ StockingStuffer.WrappedPresent({
 	-- },
 })
 
+StockingStuffer.colours.haya_active = G.C.GREEN
+StockingStuffer.colours.haya_inactive = G.C.UI.BACKGROUND_INACTIVE
+
 -- Irisu's Bat
 StockingStuffer.Present({
 	developer = display_name,
@@ -80,6 +83,11 @@ StockingStuffer.Present({
 	config = { extra = { disabled = false } },
 	artist = { 'Aikoyori' },
 	disable_use_animation = true, -- We manually move the various things ourselves so disable thissss
+	loc_vars = function(self, info_queue, card)
+		return {
+			vars = { card.ability.extra.disabled and "haya_inactive" or "haya_active" }
+		}
+	end,
 	can_use = function(self, card)
 		return G.jokers and G.jokers.highlighted and #G.jokers.highlighted == 1 and G.STATE ~= G.STATES.SELECTING_HAND and
 			not booster_obj and
@@ -573,17 +581,34 @@ StockingStuffer.Present({
 	end
 })
 
+local halvereq = function(card)
+	G.GAME.blind.chips = G.GAME.blind.chips * card.ability.extra.reduce
+	card.blind_chip_buffer = G.GAME.blind.chips
+	G.E_MANAGER:add_event(Event {
+		func = function()
+			G.GAME.blind.chip_text = number_format(card.blind_chip_buffer)
+			card.blind_chip_buffer = nil
+			G.HUD_blind:get_UIE_by_ID("HUD_blind_count"):juice_up()
+			return true
+		end
+	})
+	return {
+		message = localize('haya_murasama'),
+		sound = 'slice1'
+	}
+end
+
 -- HF Murasama
 StockingStuffer.Present({
 	developer = display_name,
 	key = "murasama",
 	pos = { x = 4, y = 0 },
 	pixel_size = { w = 37, h = 85 },
-	config = { extra = { rounds = 3 } },
+	config = { extra = { rounds = 3, reduce = 0.75 } },
 	artist = { 'Aikoyori' },
 	loc_vars = function(self, info_queue, card)
 		return {
-			vars = { card.ability.extra.rounds },
+			vars = { card.ability.extra.reduce, card.ability.extra.rounds },
 			key = "haya_stocking_murasama_" .. (card.ability.extra.rounds <= 0 and 2 or 1)
 		}
 	end,
@@ -597,25 +622,9 @@ StockingStuffer.Present({
 	---@param context CalcContext|table
 	calculate = function(self, card, context)
 		if StockingStuffer.second_calculation then return end
-		local halvereq = function()
-			G.GAME.blind.chips = G.GAME.blind.chips / 2
-			card.blind_chip_buffer = G.GAME.blind.chips
-			G.E_MANAGER:add_event(Event {
-				func = function()
-					G.GAME.blind.chip_text = number_format(card.blind_chip_buffer)
-					card.blind_chip_buffer = nil
-					G.HUD_blind:get_UIE_by_ID("HUD_blind_count"):juice_up()
-					return true
-				end
-			})
-			return {
-				message = localize('haya_murasama'),
-				sound = 'slice1'
-			}
-		end
 		if card.ability.extra.rounds > 0 then
 			if context.setting_blind then
-				return halvereq()
+				return halvereq(card)
 			end
 			if context.end_of_round and context.main_eval then
 				card.ability.extra.rounds = card.ability.extra.rounds - 1
@@ -630,8 +639,10 @@ StockingStuffer.Present({
 			end
 		else
 			if context.before then
-				return halvereq()
+				return halvereq(card)
 			end
 		end
 	end,
 })
+
+--

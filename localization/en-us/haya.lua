@@ -18,7 +18,10 @@ return {
 			haya_snap_homing = "Homing Gun",
 			haya_snap_boomerang = "Boomerang Slicer",
 			-- HF Murasama
-			haya_murasama = "Sliced!"
+			haya_murasama = "Sliced!",
+			-- Stocking badges
+			stocking_stuffer_haya_active = 'active!',
+			stocking_stuffer_haya_inactive = 'inactive',
 		}
 	},
 	descriptions = {
@@ -39,11 +42,10 @@ return {
 				},
 				text = {
 					"{C:red}Destroys{} a selected Joker",
-					"to {C:attention}prematurely visit{}",
-					"the {C:green}Christmas Tree{}",
-					"{C:inactive}(Once per ante)",
+					"to {C:attention}prematurely visit{} the",
+					"{C:green}Christmas Tree{} once per ante",
+					"{stocking}usable{} {stocking}#1#{}",
 					"{C:inactive,s:0.8}A reminder of the past",
-					"{stocking}usable{}"
 				}
 			},
 			haya_stocking_ssr_revival_skill = {
@@ -84,12 +86,13 @@ return {
 				},
 				text = {
 					{
-						"{C:attention}Halves{} the blind requirement",
-						"upon entering a blind"
+						"{X:attention,C:white}X#1#{} blind requirement",
+						"upon entering a blind",
+						"{stocking}before{}"
 					},
 					{
 						"Effect changes after",
-						"{C:attention}#1#{} more rounds"
+						"{C:attention}#2#{} more rounds"
 					}
 				}
 			},
@@ -99,8 +102,9 @@ return {
 					"{s:0.5}from {C:edition,s:0.5}[Metal Gear Rising: Revengance]"
 				},
 				text = {
-					"{C:attention}Halves{} the blind requirement",
-					"upon playing a hand"
+					"{X:attention,C:white}X#1#{} blind requirement",
+					"upon playing a hand",
+					"{stocking}before{}"
 				}
 			}
 		}
