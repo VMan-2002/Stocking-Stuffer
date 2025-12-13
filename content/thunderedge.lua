@@ -1866,7 +1866,7 @@ function StockingStuffer.ThunderEdge.all_bombs()
 end
 
 function StockingStuffer.ThunderEdge.cannot_interrupt()
-	return StockingStuffer.ThunderEdge.player ~= nil
+	return StockingStuffer.ThunderEdge.devilsknife_state
 end
 
 local options_hook = G.FUNCS.options
