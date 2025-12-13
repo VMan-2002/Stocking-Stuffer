@@ -51,12 +51,14 @@ StockingStuffer.Present({
 
     key = 'rent',
     pos = { x = 1, y = 0 },
-    config = { extra = { dollars = 3 } },
+    config = { extra = { dollars = 1 } },
     loc_vars = function(self, info_queue, card)
         return { vars = { card.ability.extra.dollars } }
     end,
-    calc_dollar_bonus = function(self, card)
-        return card.ability.extra.dollars * #SMODS.find_card("Santa Claus_stocking_coal")
+    calculate = function(self, card, context)
+        if context.joker_main and StockingStuffer.first_calculation then
+            return card.ability.extra.dollars * #G.stocking_present.cards
+        end
     end
 })
 
@@ -67,7 +69,7 @@ StockingStuffer.Present({
     pos = { x = 3, y = 0 },
     calculate = function(self, card, context)
         if context.ante_change then
-            SMODS.add_card { set = "stocking_present"}
+            SMODS.add_card { set = "stocking_present" }
         end
     end
 })
@@ -84,7 +86,58 @@ StockingStuffer.Present({
         return { vars = { card.ability.extra.xmult } }
     end,
     calculate = function(self, card, context)
-        if context.final_scoring_step and StockingStuffer.second_calculation and next(context.poker_hands['Pair']) then
+        if context.final_scoring_step and StockingStuffer.second_calculation and next(context.poker_hands['Pair' or 'Two Pair']) then
+            return {
+                xmult = card.ability.extra.xmult
+            }
+        end
+    end
+})
+
+StockingStuffer.Present({
+    developer = display_name, -- DO NOT CHANGE
+
+    key = 'turron',
+    pos = { x = 4, y = 0 },
+    config = { extra = { chips = 100 } },
+    loc_vars = function(self, info_queue, card)
+        return { vars = { card.ability.extra.chips } }
+    end,
+    calculate = function(self, card, context)
+        if context.joker_main and StockingStuffer.first_calculation then
+            local has_stone = false
+            for i, p_card in ipairs(context.scoring_hand) do
+                if SMODS.has_enhancement(p_card, "m_stone") then
+                    has_stone = true
+                end
+            end
+            if has_stone then
+                return {
+                    chips = card.ability.extra.chips 
+                }
+            end
+        end
+    end
+})
+
+StockingStuffer.Present({
+    developer = display_name, -- DO NOT CHANGE
+
+    key = '8crazyantes',
+    pos = { x = 5, y = 0 },
+    config = { extra = { startingxmult = 4, xmult = 4, decrease = 0.5 } },
+    loc_vars = function(self, info_queue, card)
+        return { vars = { card.ability.extra.xmult, card.ability.extra.decrease } }
+    end,
+    add_to_deck = function(self, card, from_debuff)
+        card.ability.extra.xmult = card.ability.extra.startingxmult - (card.ability.extra.decrease * (G.GAME.round_resets.ante - 1))
+        print(card.ability.extra.startingxmult);
+        print(card.ability.extra.decrease);
+        print(G.GAME.round_resets.ante - 1);
+    end,
+    calculate = function(self, card, context)
+        if context.joker_main and StockingStuffer.second_calculation then
+            card.ability.extra.xmult = card.ability.extra.startingxmult - (card.ability.extra.decrease * G.GAME.round_resets.ante - 1)             
             return {
                 xmult = card.ability.extra.xmult
             }
