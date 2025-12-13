@@ -1,6 +1,7 @@
 return {
     misc = {
         dictionary = {
+            love_success = "Swapped!",
             mcr_success = "Extracted!",
             rs_success = "Switched!"
         }
@@ -41,7 +42,7 @@ return {
                 text = {
                     'Played cards with {C:spades}Spade{} suit',
                     'have a {C:green}#1# in #2#{} chance',
-                    'to be {C:attention}destroyed',
+                    'to be {C:attention}destroyed{} after scoring',
                     '{stocking}after{}',
                     "{C:inactive,s:0.8}With real {}{C:hearts}Hearts{}{C:inactive,s:0.8} swapping action!"
                 }

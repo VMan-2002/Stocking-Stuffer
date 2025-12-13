@@ -62,12 +62,12 @@ StockingStuffer.Present({
 
     key = 'archy',
 
-    pos = { x = 0, y = 0 },
+    pos = { x = 1, y = 0 },
     atlas = 'gote_presents',
     config = {
         state = 1,
-        blind = archyarrayi[state],
-        level = archyarrayii[state]
+        blind = archyarrayi[state or 1],
+        level = archyarrayii[state or 1]
     },
 
     loc_vars = function(self, info_queue, card)
@@ -97,57 +97,118 @@ StockingStuffer.Present({
 
     key = 'love',
     
-    pos = { x = 0, y = 0 },
+    pos = { x = 2, y = 0 },
     atlas = 'gote_presents',
-    config = { chance = 8 },
+    config = { 
+        state = 1,
+        chance = 8,
+        transform = false,
+    },
 
     loc_vars = function(self, info_queue, card)
-        return {
-            vars = {SMODS.get_probability_vars(card, 1, card.ability.chance, 'BarrierTrio/Gote_stocking_love'), card.ability.chance},
-        }
+        return {key = card.ability.state == 1 and "BarrierTrio/Gote_stocking_love" or "BarrierTrio/Gote_stocking_hate", vars = {
+            SMODS.get_probability_vars(card, 1, card.ability.chance, 'BarrierTrio/Gote_stocking_love'), card.ability.chance
+        }}
     end,
-
-    -- calculate is completely optional, delete if your present does not need it
-    calculate = function(self, card, context)
-        -- check context and return appropriate values
-        -- StockingStuffer.first_calculation is true before jokers are calculated
-        -- StockingStuffer.second_calculation is true after jokers are calculated
-        if context.joker_main then
-            return {
-                message = 'example'
-            }
+    load = function(self, card, card_table, other_card)
+        card.loaded = true
+    end,
+    update = function(self, card, dt)
+        if card.loaded then
+            card.children.center:set_sprite_pos({x = card.ability.state == 1 and 2 or 3, y = 0})
+            card.loaded = false
         end
-    end
-})
-
-StockingStuffer.Present({
-    developer = display_name,
-
-    key = 'hate',
-    
-    atlas = 'gote_presents',
-    config = { chance = 5 },
-
-    loc_vars = function(self, info_queue, card)
-        return {
-            vars = {SMODS.get_probability_vars(card, 1, card.ability.chance, 'BarrierTrio/Gote_stocking_hate'), card.ability.chance},
-        }
     end,
-    
-    in_pool = function(context, self, card) 
-        return false
-    end,
-    no_collection = true,
 
-    -- calculate is completely optional, delete if your present does not need it
     calculate = function(self, card, context)
-        -- check context and return appropriate values
-        -- StockingStuffer.first_calculation is true before jokers are calculated
-        -- StockingStuffer.second_calculation is true after jokers are calculated
-        if context.joker_main then
-            return {
-                message = 'example'
-            }
+        if card.ability.state == 1 then
+            if context.joker_main and StockingStuffer.first_calculation then
+                for _, v in ipairs(context.scoring_hand) do
+                    if v:is_suit('Spades') then
+                        card.ability.transform = true
+                        break
+                    end
+                end
+            end
+
+            if context.before and not card.debuff and StockingStuffer.first_calculation then
+                local upgradecards = {}
+                for _, v in ipairs(context.scoring_hand) do
+                    if v:is_suit('Hearts') and SMODS.pseudorandom_probability(card, 'BarrierTrio/Gote_stocking_love', 1, card.ability.chance) then
+                        upgradecards[#upgradecards+1] = v
+                    end
+                end
+
+                local levels = #upgradecards
+                if levels > 0 then
+                    for i = 1, levels do
+                        G.E_MANAGER:add_event(Event({ 
+                            trigger = 'before',
+                            delay = 0.2,
+                            func = function()
+                                upgradecards[i]:juice_up()
+                            return true 
+                        end }))
+                    end
+                    return {
+                        card = card,
+                        level_up = levels,
+                        message = localize('k_level_up_ex'),
+                    }
+                end
+            end
+
+            if context.after and StockingStuffer.second_calculation and card.ability.transform then
+                card.ability.state = card.ability.state * -1
+                card.ability.chance = 5
+                card.ability.transform = false
+                G.E_MANAGER:add_event(Event({
+                    trigger = 'immediate',
+                    func = function()                
+                        card.children.center:set_sprite_pos({x = 3, y = 0})
+                        return true
+                    end
+                }))
+                return {
+                    message = localize('love_success')
+                }
+            end
+        end
+
+        if card.ability.state == -1 then
+            if context.joker_main and StockingStuffer.first_calculation then
+                for _, v in ipairs(context.scoring_hand) do
+                    if v:is_suit('Hearts') then
+                        card.ability.transform = true
+                        break
+                    end
+                end
+            end
+
+            if context.destroy_card and StockingStuffer.second_calculation and not card.debuff and not context.destroy_card.debuff and context.cardarea == G.play and context.destroying_card:is_suit('Spades') then
+                if SMODS.pseudorandom_probability(card, 'BarrierTrio/Gote_stocking_love', 1, card.ability.chance) then
+                    return {
+                        delay = 0.45, 
+                        remove = true,
+                    }
+                end
+            end
+
+            if context.after and StockingStuffer.second_calculation and card.ability.transform then
+                card.ability.state = card.ability.state * -1
+                card.ability.chance = 8
+                card.ability.transform = false
+                G.E_MANAGER:add_event(Event({
+                    trigger = 'immediate',
+                    func = function()                
+                        card.children.center:set_sprite_pos({x = 2, y = 0})
+                        return true
+                    end
+                }))
+                return {
+                    message = localize('love_success')
+                }
+            end
         end
     end
 })
@@ -156,7 +217,7 @@ StockingStuffer.Present({
     developer = display_name,
 
     key = 'maggie',
-    pos = { x = 0, y = 0 },
+    pos = { x = 4, y = 0 },
     atlas = 'gote_presents',
     config = { chance = 4 },
 
@@ -195,7 +256,7 @@ StockingStuffer.Present({
     developer = display_name,
 
     key = 'commander',
-    pos = { x = 0, y = 0 },
+    pos = { x = 5, y = 0 },
     atlas = 'gote_presents',
     
     can_use = function(self, card)
@@ -226,7 +287,7 @@ StockingStuffer.Present({
     developer = display_name,
 
     key = 'tony',
-    pos = { x = 0, y = 0 },
+    pos = { x = 6, y = 0 },
     atlas = 'gote_presents',
     config = { used = 0 },
 
