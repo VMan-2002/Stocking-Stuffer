@@ -1,12 +1,9 @@
--- Developer name - Replace 'template' with your display name
--- Note: This will be used to link your objects together, and be displayed under the name of your additions
-local display_name = 'template'
--- MAKE SURE THIS VALUE HAS BEEN CHANGED
+
+local display_name = 'blanthos'
 
 
--- Present Atlas Template
--- Note: You are allowed to create more than one atlas if you need to use weird dimensions
--- We recommend you name your atlas with your display_name included
+
+
 SMODS.Atlas({
     key = display_name..'_presents',
     path = 'presents.png',
@@ -15,73 +12,212 @@ SMODS.Atlas({
 })
 
 
--- Developer Template
--- Note: This object is how your WrappedPresent and Presents get linked
+
 StockingStuffer.Developer({
     name = display_name, -- DO NOT CHANGE
 
-    -- Replace '000000' with your own hex code
-    -- Used to colour your name and some particles when opening your present
-    colour = HEX('000000')
+
+    colour = HEX('6D83E8')
 })
 
--- Wrapped Present Template
--- key defaults to 'display_name_stocking_present'
+
 StockingStuffer.WrappedPresent({
     developer = display_name, -- DO NOT CHANGE
 
     pos = { x = 0, y = 0 }, -- position of present sprite on your atlas
-    -- atlas defaults to 'stocking_display_name_presents' as created earlier but can be overriden
-
-    -- Your present will be given an automatically generated name and description. If you want to customise it you can, though we recommend keeping the {V:1} in the name
-    -- You are encouraged to use the localization file for your name and description, this is here as an example
-    -- loc_txt = {
-    --     name = '{V:1}Present',
-    --     text = {
-    --         '  {C:inactive}What could be inside?  ',
-    --         '{C:inactive}Open me to find out!'
-    --     }
-    -- },
 })
 
--- Present Template - Replace 'template' with your name
--- Note: You should make up to 5 Presents to fill your Wrapped Present!
+
 StockingStuffer.Present({
     developer = display_name, -- DO NOT CHANGE
 
-    key = 'filler_1', -- keys are prefixed with 'display_name_stocking_' for reference
-    -- You are encouraged to use the localization file for your name and description, this is here as an example
-    -- loc_txt = {
-    --     name = 'Example Present',
-    --     text = {
-    --         'Does nothing'
-    --     }
-    -- },
+    key = 'lukepot',
+
     pos = { x = 0, y = 0 },
-    -- atlas defaults to 'stocking_display_name_presents' as created earlier but can be overriden
+ 	config = { extra = {denom = 1, increase = 1, increasedamount = 0} },
 
-
-    -- use and can_use are completely optional, delete if you do not need your present to be usable
-    can_use = function(self, card)
-        -- check for use condition here
-        return true
-    end,
-    use = function(self, card, area, copier) 
-        -- do stuff here
-        print('example')
-    end,
-    keep_on_use = function(self, card)
-        -- return true when card should be kept
+ loc_vars = function(self, info_queue, card)
+		local numberator, denim = SMODS.get_probability_vars(card, 1, card.ability.extra.denom + card.ability.extra.increasedamount, "Lukewarm Potato")
+        return {
+            vars = { numberator, denim, card.ability.extra.increase },
+        }
     end,
 
-    -- calculate is completely optional, delete if your present does not need it
+  
     calculate = function(self, card, context)
-        -- check context and return appropriate values
-        -- StockingStuffer.first_calculation is true before jokers are calculated
-        -- StockingStuffer.second_calculation is true after jokers are calculated
-        if context.joker_main then
+        if StockingStuffer.second_calculation and context.joker_main
+			and SMODS.pseudorandom_probability(
+				card,
+				"yaoi",
+				1,
+				card.ability.extra.denom + card.ability.extra.increasedamount,
+				"Lukewarm Potato"
+			)
+then
+     local gift = nil
+            G.E_MANAGER:add_event(Event({
+                trigger = 'immediate',
+                func = function()
+                    G.gift.T.y = card.T.y
+                    G.E_MANAGER:add_event(Event({
+                        trigger = 'after', delay = 0.2,
+                        func = function()
+                            local pool = get_current_pool('stocking_present')
+                            local key = pseudorandom_element(pool, 'stocking_present_open', {in_pool = function(v, args) return G.P_CENTERS[v] end})
+                            discover_card(G.P_CENTERS[key])
+                            gift = SMODS.add_card({ area = G.gift, set = 'stocking_present', key = key })
+                            return true
+                        end
+                    }))
+                    G.E_MANAGER:add_event(Event({
+                        trigger = 'immediate',
+                        func = function()
+                            draw_card(G.gift, G.stocking_present, nil, 'up', nil, gift)
+                            return true
+                        end
+                    }))
+                    return true
+                end
+            }))
+                SMODS.scale_card(card, {
+                    ref_table = card.ability.extra,
+                    ref_value = 'increasedamount',
+                    scalar_value = 'increase',
+                    scaling_message = {message = localize('santa_claus_crank')},
+                    block_overrides = {message = true} 
+                })
+                return nil, true
+            end
+    end
+})
+
+
+
+StockingStuffer.Present({
+    developer = display_name, -- DO NOT CHANGE
+
+    key = 'dailycalendar', -- keys are prefixed with 'display_name_stocking_' for reference
+    pos = { x = 0, y = 0 },	
+
+loc_vars = function(self, info_queue, center)
+info_queue[#info_queue + 1] = G.P_CENTERS.j_joker
+end,
+
+    calculate = function(self, card, context)
+        if StockingStuffer.first_calculation and context.before then
+     local notgift = nil
+            G.E_MANAGER:add_event(Event({
+                trigger = 'immediate',
+                func = function()
+                    G.gift.T.y = card.T.y
+                    G.E_MANAGER:add_event(Event({
+                        trigger = 'after', delay = 0.2,
+                        func = function()
+                            notgift = SMODS.add_card({ area = G.gift, set = 'stocking_present', key = 'j_joker', edition = (poll_edition('gay_sex_edition', nil, true, true)) })
+                            return true
+                        end
+                    }))
+                    G.E_MANAGER:add_event(Event({
+                        trigger = 'immediate',
+                        func = function()
+                            draw_card(G.gift, G.stocking_present, nil, 'up', nil, notgift)
+                            return true
+                        end
+                    }))
+                    return true
+                end
+            }))
+    end
+end
+})
+
+
+
+-- why did i think this was a good idea
+SMODS.Scoring_Parameter {
+	key = 'jolly_glop',
+	default_value = 1,
+	colour = G.C.GREEN,
+    calculation_keys = {'jolly_glop'},
+    calc_effect = function(self, effect, scored_card, key, amount, from_edition)
+	    if key == 'jolly_glop' and amount then
+	        if effect.card and effect.card ~= scored_card then juice_card(effect.card) end
+	        self:modify(amount)
+	        card_eval_status_text(scored_card, 'extra', nil, percent, nil,
+	            {message = localize{type = 'variable', key = amount > 0 and 'a_chips' or 'a_chips_minus', vars = {amount}}, colour = self.colour})
+	        return true
+        end
+end
+}
+
+
+SMODS.Scoring_Calculation {
+	key = 'jolly_glop',
+	parameters = {'mult', 'chips', 'stocking_jolly_glop'},
+	func = function (self, chips, mult, flames)
+		local jolly_glop = SMODS.get_scoring_parameter('stocking_jolly_glop', flames)
+		return chips * mult * jolly_glop
+end,
+-- borrowed ui from potassium remake because deadline battle advanced not enough time to learn how to ui
+    replace_ui = function (self) --[[@overload fun(self): table]]
+        local scale = 0.3
+        return
+		{n=G.UIT.R, config={align = "cm", minh = 1, padding = 0.1}, nodes={
+			{n=G.UIT.C, config={align = 'cm', id = 'hand_chips_container'}, nodes = {
+				SMODS.GUI.score_container({
+					type = 'chips',
+					text = 'chip_text',
+					align = 'cr',
+					w = 1.3,
+                    h = 0.7,
+					scale = scale
+				})
+			}},
+			SMODS.GUI.operator(scale*0.75),
+			{n=G.UIT.C, config={align = 'cm', id = 'hand_mult_container'}, nodes = {
+				SMODS.GUI.score_container({
+					type = 'mult',
+					align = 'cm',
+					w = 1.3,
+                    h = 0.7,
+					scale = scale
+				})
+			}},
+			SMODS.GUI.operator(scale*0.75),
+			{n=G.UIT.C, config={align = 'cm', id = 'hand_stocking_jolly_glop_container'}, nodes = {
+				SMODS.GUI.score_container({
+					type = 'stocking_jolly_glop',
+					align = 'cl',
+					w = 1.3,
+                    h = 0.7,
+					scale = scale
+				})
+			}},
+		}}
+    end
+}
+
+
+StockingStuffer.Present({
+    developer = display_name, -- DO NOT CHANGE
+
+    key = 'slime', -- keys are prefixed with 'display_name_stocking_' for reference
+    pos = { x = 0, y = 0 },
+    config = { extra = 0.1 },
+ loc_vars = function(self, info_queue, card)
+        return {
+            vars = { card.ability.extra },
+        }
+    end,
+
+    add_to_deck = function (self, card, from_debuff)
+            SMODS.set_scoring_calculation('stocking_jolly_glop')
+    end,
+
+    calculate = function(self, card, context)
+if context.individual and context.cardarea == G.play and StockingStuffer.second_calculation then
             return {
-                message = 'example'
+                jolly_glop = card.ability.extra
             }
         end
     end
