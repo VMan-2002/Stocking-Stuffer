@@ -106,6 +106,18 @@ return {
 					"upon playing a hand",
 					"{stocking}before{}"
 				}
+			},
+			haya_stocking_toxomister = {
+				name = {
+					"Toxomister",
+					"{s:0.5}from {C:edition,s:0.5}[Sonic & Knuckles]"
+				},
+				text = {
+					"{C:attention}Disables{} the Boss Blind and",
+					"{C:red}debuffs{} all cards held in hand",
+					"for the duration of the blind",
+					"{stocking}usable{}",
+				}
 			}
 		}
 	}

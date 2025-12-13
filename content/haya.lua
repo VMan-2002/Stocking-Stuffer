@@ -38,7 +38,7 @@ StockingStuffer.Developer({
 
 	-- Replace '000000' with your own hex code
 	-- Used to colour your name and some particles when opening your present
-	colour = lighten(HEX('515aa8'), 0.3)
+	colour = lighten(HEX('515aa8'), 0.5)
 })
 
 -- Just in case if Aiko's name is not yet loaded...
@@ -645,4 +645,69 @@ StockingStuffer.Present({
 	end,
 })
 
---
+-- Toxomister
+StockingStuffer.Present({
+	developer = display_name,
+	key = "toxomister",
+	pos = { x = 0, y = 0 },
+	--pixel_size = { w = 56, h = 74 },
+	config = { extra = { used = false } },
+	artist = { 'Aikoyori' },
+	can_use = function(self, card)
+		return G.GAME.blind.boss and G.STATE == G.STATES.SELECTING_HAND and not card.ability.extra.used
+	end,
+	calculate = function(self, card, context)
+		if context.ante_end and card.ability.extra.used then
+			card.ability.extra.used = false
+			return {
+				message = localize('k_reset')
+			}
+		end
+	end,
+	use = function(self, card, area, copier)
+		delay(0.7)
+
+		G.E_MANAGER:add_event(Event {
+			func = function()
+				card:juice_up(0.7)
+				play_sound('tarot1')
+				G.GAME.blind:disable()
+				return true
+			end
+		})
+		SMODS.calculate_effect({ message = localize('ph_boss_disabled') }, card)
+		card.ability.extra.used = true
+
+		delay(0.4)
+
+		for k, v in ipairs(G.hand.cards) do
+			G.E_MANAGER:add_event(Event {
+				delay = 0.1,
+				trigger = 'after',
+				func = function()
+					v:juice_up()
+					SMODS.debuff_card(v, true, "toxomister_debuff")
+					play_sound('tarot1')
+					return true
+				end
+			})
+		end
+
+		delay(0.7)
+	end,
+	keep_on_use = function(self, card)
+		return true
+	end
+})
+
+-- Hook StockingStuffer.calculate to clear debuffs from toxomister even if toxomister is not available
+local calculate = StockingStuffer.calculate or function(self, context) end
+StockingStuffer.calculate = function(self, context)
+	local ret = calculate(self, context)
+	if context.end_of_round and context.main_eval then
+		for k, v in ipairs(G.playing_cards) do
+			SMODS.debuff_card(v, false, "toxomister_debuff")
+		end
+	end
+	return ret
+end
