@@ -28,6 +28,7 @@ StockingStuffer.Present({
     config = { extra = { current_chance = 0, denominator = 7 } },
     blueprint_compat = true,
     coder = { "notmario" },
+    artist = { "pangaea47", "hollowedgraphix" },
 
     loc_vars = function(self, info_queue, card)
         local new_numerator, new_denominator = SMODS.get_probability_vars(card, card.ability.extra.current_chance, card.ability.extra.denominator, 'spectral_key')
@@ -270,6 +271,18 @@ function love.update(dt)
     lu(dt)
 end
 
+local ch = Card.highlight
+function Card:highlight(is_higlighted)
+    ch(self, is_higlighted)
+    if self.camcorder_targeted then
+        for _, present in pairs(SMODS.find_card("pangaea47_stocking_camcorder")) do
+            if present.ability.extra.target == self.sort_id then
+                present:juice_up(0.3, 0.4)
+            end
+        end
+    end
+end
+
 SMODS.DrawStep({
 	key = "camcorder_targeted",
 	order = 25,
@@ -283,204 +296,201 @@ SMODS.DrawStep({
 	conditions = { vortex = false, facing = "front" },
 })
 
+
 -- some take ownerships based on hpot wizard tower stuff
-local usage_check_consumable = function(self, card)
-    return G.hand and #G.hand.highlighted > 0 and #G.hand.highlighted <= card.ability.consumeable.mod_num
-end
-SMODS.Consumable:take_ownership('talisman',
-    {
-    config = { extra = { seal = 'Gold' }, max_highlighted = 1 },
-    loc_vars = function(self, info_queue, card)
-        local key = self.key .. "_v2"
-        if G.GAME.max_highlighted_mod and to_number(G.GAME.max_highlighted_mod) > 0 then
-            key = key .. "_p"
-        end
-        info_queue[#info_queue + 1] = G.P_SEALS[card.ability.extra.seal]
-        return { key = key, vars = { card.ability.max_highlighted } }
-    end,
-    use = function(self, card, area, copier)
-        G.E_MANAGER:add_event(Event({
-            func = function()
-                play_sound('tarot1')
-                card:juice_up(0.3, 0.5)
-                return true
-            end
-        }))
-        for _, v in ipairs(G.hand.highlighted) do
+-- we can safely skip this if hotpot is loaded
+-- which is good because im like 99% sure theyd break
+if not HotPotato then
+    local usage_check_consumable = function(self, card)
+        return G.hand and #G.hand.highlighted > 0 and #G.hand.highlighted <= card.ability.consumeable.mod_num
+    end
+    SMODS.Consumable:take_ownership('talisman',
+        {
+        config = { extra = { seal = 'Gold' }, max_highlighted = 1 },
+        use = function(self, card, area, copier)
             G.E_MANAGER:add_event(Event({
-                trigger = 'after',
-                delay = 0.1,
                 func = function()
-                        v:set_seal(card.ability.extra.seal, nil, true)
+                    play_sound('tarot1')
+                    card:juice_up(0.3, 0.5)
                     return true
                 end
             }))
-        end
-        delay(0.5)
-        G.E_MANAGER:add_event(Event({
-            trigger = 'after',
-            delay = 0.2,
-            func = function()
-                G.hand:unhighlight_all()
-                return true
-            end
-        }))
-    end,
-    can_use = usage_check_consumable
-    }
-, true)
-SMODS.Consumable:take_ownership('aura',
-    {
-    config = { max_highlighted = 1 },
-    use = function(self, card, area, copier)
-        for _, v in ipairs(G.hand.highlighted) do
-            G.E_MANAGER:add_event(Event({
-                trigger = 'after',
-                delay = 0.4,
-                func = function()
-                        local edition = poll_edition('aura', nil, true, true,
-                            { 'e_polychrome', 'e_holo', 'e_foil' })
-                        v:set_edition(edition, true)
-                        card:juice_up(0.3, 0.5)
-                    return true
-                end
-            }))
-        end
-    end,
-    can_use = usage_check_consumable
-    }
-, true)
-SMODS.Consumable:take_ownership('deja_vu',
-    {
-    config = { extra = { seal = 'Red' }, max_highlighted = 1 },
-    use = function(self, card, area, copier)
-        G.E_MANAGER:add_event(Event({
-            func = function()
-                play_sound('tarot1')
-                card:juice_up(0.3, 0.5)
-                return true
-            end
-        }))
-        for _, v in ipairs(G.hand.highlighted) do
-            G.E_MANAGER:add_event(Event({
-                trigger = 'after',
-                delay = 0.1,
-                func = function()
-                        v:set_seal(card.ability.extra.seal, nil, true)
-                    return true
-                end
-            }))
-        end
-        delay(0.5)
-        G.E_MANAGER:add_event(Event({
-            trigger = 'after',
-            delay = 0.2,
-            func = function()
-                G.hand:unhighlight_all()
-                return true
-            end
-        }))
-    end,
-    can_use = usage_check_consumable
-    }
-, true)
-SMODS.Consumable:take_ownership('trance',
-    {
-    config = { extra = { seal = 'Blue' }, max_highlighted = 1 },
-    use = function(self, card, area, copier)
-        G.E_MANAGER:add_event(Event({
-            func = function()
-                play_sound('tarot1')
-                card:juice_up(0.3, 0.5)
-                return true
-            end
-        }))
-        for _, v in ipairs(G.hand.highlighted) do
-            G.E_MANAGER:add_event(Event({
-                trigger = 'after',
-                delay = 0.1,
-                func = function()
-                        v:set_seal(card.ability.extra.seal, nil, true)
-                    return true
-                end
-            }))
-        end
-        delay(0.5)
-        G.E_MANAGER:add_event(Event({
-            trigger = 'after',
-            delay = 0.2,
-            func = function()
-                G.hand:unhighlight_all()
-                return true
-            end
-        }))
-    end,
-    can_use = usage_check_consumable
-    }
-, true)
-SMODS.Consumable:take_ownership('medium',
-    {
-    config = { extra = { seal = 'Purple' }, max_highlighted = 1 },
-    use = function(self, card, area, copier)
-        G.E_MANAGER:add_event(Event({
-            func = function()
-                play_sound('tarot1')
-                card:juice_up(0.3, 0.5)
-                return true
-            end
-        }))
-        for _, v in ipairs(G.hand.highlighted) do
-            G.E_MANAGER:add_event(Event({
-                trigger = 'after',
-                delay = 0.1,
-                func = function()
-                        v:set_seal(card.ability.extra.seal, nil, true)
-                    return true
-                end
-            }))
-        end
-        delay(0.5)
-        G.E_MANAGER:add_event(Event({
-            trigger = 'after',
-            delay = 0.2,
-            func = function()
-                G.hand:unhighlight_all()
-                return true
-            end
-        }))
-    end,
-    can_use = usage_check_consumable
-    }
-, true)
-SMODS.Consumable:take_ownership('cryptid',
-    {
-    config = { max_highlighted = 1, extra = { cards = 2 } },
-    use = function(self, card, area, copier)
-        G.E_MANAGER:add_event(Event({
-            func = function()
-                local _first_dissolve = nil
-                local new_cards = {}
-                for _, v in ipairs(G.hand.highlighted) do
-                    for i = 1, card.ability.extra.cards do
-                        G.playing_card = (G.playing_card and G.playing_card + 1) or 1
-                        local _card = copy_card(v, nil, nil, G.playing_card)
-                        _card:add_to_deck()
-                        G.deck.config.card_limit = G.deck.config.card_limit + 1
-                        table.insert(G.playing_cards, _card)
-                        G.hand:emplace(_card)
-                        _card:start_materialize(nil, _first_dissolve)
-                        _first_dissolve = true
-                        new_cards[#new_cards + 1] = _card
+            for _, v in ipairs(G.hand.highlighted) do
+                G.E_MANAGER:add_event(Event({
+                    trigger = 'after',
+                    delay = 0.1,
+                    func = function()
+                            v:set_seal(card.ability.extra.seal, nil, true)
+                        return true
                     end
-                end
-                SMODS.calculate_context({ playing_card_added = true, cards = new_cards })
-                return true
+                }))
             end
-        }))
-    end,
-    can_use = usage_check_consumable
-    }
-, true)
+            delay(0.5)
+            G.E_MANAGER:add_event(Event({
+                trigger = 'after',
+                delay = 0.2,
+                func = function()
+                    G.hand:unhighlight_all()
+                    return true
+                end
+            }))
+        end,
+        can_use = usage_check_consumable
+        }
+    , true)
+    SMODS.Consumable:take_ownership('aura',
+        {
+        config = { max_highlighted = 1 },
+        use = function(self, card, area, copier)
+            for _, v in ipairs(G.hand.highlighted) do
+                G.E_MANAGER:add_event(Event({
+                    trigger = 'after',
+                    delay = 0.4,
+                    func = function()
+                            local edition = poll_edition('aura', nil, true, true,
+                                { 'e_polychrome', 'e_holo', 'e_foil' })
+                            v:set_edition(edition, true)
+                            card:juice_up(0.3, 0.5)
+                        return true
+                    end
+                }))
+            end
+        end,
+        can_use = usage_check_consumable
+        }
+    , true)
+    SMODS.Consumable:take_ownership('deja_vu',
+        {
+        config = { extra = { seal = 'Red' }, max_highlighted = 1 },
+        use = function(self, card, area, copier)
+            G.E_MANAGER:add_event(Event({
+                func = function()
+                    play_sound('tarot1')
+                    card:juice_up(0.3, 0.5)
+                    return true
+                end
+            }))
+            for _, v in ipairs(G.hand.highlighted) do
+                G.E_MANAGER:add_event(Event({
+                    trigger = 'after',
+                    delay = 0.1,
+                    func = function()
+                            v:set_seal(card.ability.extra.seal, nil, true)
+                        return true
+                    end
+                }))
+            end
+            delay(0.5)
+            G.E_MANAGER:add_event(Event({
+                trigger = 'after',
+                delay = 0.2,
+                func = function()
+                    G.hand:unhighlight_all()
+                    return true
+                end
+            }))
+        end,
+        can_use = usage_check_consumable
+        }
+    , true)
+    SMODS.Consumable:take_ownership('trance',
+        {
+        config = { extra = { seal = 'Blue' }, max_highlighted = 1 },
+        use = function(self, card, area, copier)
+            G.E_MANAGER:add_event(Event({
+                func = function()
+                    play_sound('tarot1')
+                    card:juice_up(0.3, 0.5)
+                    return true
+                end
+            }))
+            for _, v in ipairs(G.hand.highlighted) do
+                G.E_MANAGER:add_event(Event({
+                    trigger = 'after',
+                    delay = 0.1,
+                    func = function()
+                            v:set_seal(card.ability.extra.seal, nil, true)
+                        return true
+                    end
+                }))
+            end
+            delay(0.5)
+            G.E_MANAGER:add_event(Event({
+                trigger = 'after',
+                delay = 0.2,
+                func = function()
+                    G.hand:unhighlight_all()
+                    return true
+                end
+            }))
+        end,
+        can_use = usage_check_consumable
+        }
+    , true)
+    SMODS.Consumable:take_ownership('medium',
+        {
+        config = { extra = { seal = 'Purple' }, max_highlighted = 1 },
+        use = function(self, card, area, copier)
+            G.E_MANAGER:add_event(Event({
+                func = function()
+                    play_sound('tarot1')
+                    card:juice_up(0.3, 0.5)
+                    return true
+                end
+            }))
+            for _, v in ipairs(G.hand.highlighted) do
+                G.E_MANAGER:add_event(Event({
+                    trigger = 'after',
+                    delay = 0.1,
+                    func = function()
+                            v:set_seal(card.ability.extra.seal, nil, true)
+                        return true
+                    end
+                }))
+            end
+            delay(0.5)
+            G.E_MANAGER:add_event(Event({
+                trigger = 'after',
+                delay = 0.2,
+                func = function()
+                    G.hand:unhighlight_all()
+                    return true
+                end
+            }))
+        end,
+        can_use = usage_check_consumable
+        }
+    , true)
+    SMODS.Consumable:take_ownership('cryptid',
+        {
+        config = { max_highlighted = 1, extra = 2 },
+        use = function(self, card, area, copier)
+            G.E_MANAGER:add_event(Event({
+                func = function()
+                    local _first_dissolve = nil
+                    local new_cards = {}
+                    for _, v in ipairs(G.hand.highlighted) do
+                        for i = 1, card.ability.extra do
+                            G.playing_card = (G.playing_card and G.playing_card + 1) or 1
+                            local _card = copy_card(v, nil, nil, G.playing_card)
+                            _card:add_to_deck()
+                            G.deck.config.card_limit = G.deck.config.card_limit + 1
+                            table.insert(G.playing_cards, _card)
+                            G.hand:emplace(_card)
+                            _card:start_materialize(nil, _first_dissolve)
+                            _first_dissolve = true
+                            new_cards[#new_cards + 1] = _card
+                        end
+                    end
+                    SMODS.calculate_context({ playing_card_added = true, cards = new_cards })
+                    return true
+                end
+            }))
+        end,
+        can_use = usage_check_consumable
+        }
+    , true)
+    end
 
 StockingStuffer.Present({
     developer = display_name,
