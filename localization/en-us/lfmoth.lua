@@ -18,7 +18,8 @@ return {
                 name = 'Giftapult',
                 text = {
                     'Creates a {C:attention}present',
-                    'every ante'
+                    'every ante',
+                    '{stocking}before'
                 }
             },
             ["LFMoth_stocking_underwear"] = {

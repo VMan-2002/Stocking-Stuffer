@@ -57,7 +57,7 @@ StockingStuffer.Present({
     end,
     calculate = function(self, card, context)
         if context.joker_main and StockingStuffer.first_calculation then
-            return card.ability.extra.dollars * #G.stocking_present.cards
+            ease_dollars(card.ability.extra.dollars * #G.stocking_present.cards)
         end
     end
 })
@@ -68,7 +68,7 @@ StockingStuffer.Present({
     key = 'giftapult',
     pos = { x = 3, y = 0 },
     calculate = function(self, card, context)
-        if context.ante_change then
+        if context.ante_change and StockingStuffer.first_calculation then
             SMODS.add_card { set = "stocking_present" }
         end
     end
@@ -131,16 +131,15 @@ StockingStuffer.Present({
     end,
     add_to_deck = function(self, card, from_debuff)
         card.ability.extra.xmult = card.ability.extra.startingxmult - (card.ability.extra.decrease * (G.GAME.round_resets.ante - 1))
-        print(card.ability.extra.startingxmult);
-        print(card.ability.extra.decrease);
-        print(G.GAME.round_resets.ante - 1);
     end,
     calculate = function(self, card, context)
         if context.joker_main and StockingStuffer.second_calculation then
             card.ability.extra.xmult = card.ability.extra.startingxmult - (card.ability.extra.decrease * G.GAME.round_resets.ante - 1)             
-            return {
-                xmult = card.ability.extra.xmult
-            }
+            if G.GAME.round_resets.ante <= 8 then
+                return {
+                    xmult = card.ability.extra.xmult
+                }
+            end
         end
     end
 })
