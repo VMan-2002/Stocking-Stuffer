@@ -16,7 +16,7 @@ local display_name = 'VMan_2002'
 -- MAKE SURE THIS VALUE HAS BEEN CHANGED
 
 local returnFalse = topuplib and topuplib.returnFalse or function() return false end
---local print = returnFalse
+local print = returnFalse
 
 -- Present Atlas Template
 -- Note: You are allowed to create more than one atlas if you need to use weird dimensions
