@@ -23,9 +23,14 @@ return {
                 name = '365 Daily Jokers Calendar',
                 text = {
                     {'Scored cards give {C;green}+#1# Jolly Glop{}',
-                    '{stocking}before{}',}
-                }
-            },
+                    '{stocking}after{}',}
+				}
+			},
+        }
+    },
+    misc = {
+		score_message = {
+			plus_jolly_glop="+#1# Jolly Glop",
+		}
     }
-}
 }

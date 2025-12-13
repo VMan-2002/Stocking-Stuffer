@@ -143,12 +143,13 @@ SMODS.Scoring_Parameter {
 	    if key == 'jolly_glop' and amount then
 	        if effect.card and effect.card ~= scored_card then juice_card(effect.card) end
 	        self:modify(amount)
-	        card_eval_status_text(scored_card, 'extra', nil, percent, nil,
+card_eval_status_text(scored_card, 'extra', nil, percent, nil, 
 	            {message = localize{type = 'variable', key = amount > 0 and 'a_chips' or 'a_chips_minus', vars = {amount}}, colour = self.colour})
 	        return true
         end
-end
+    end
 }
+
 
 
 SMODS.Scoring_Calculation {
@@ -218,7 +219,10 @@ StockingStuffer.Present({
 if context.individual and context.cardarea == G.play and StockingStuffer.second_calculation then
             return {
                 jolly_glop = card.ability.extra
+
             }
+
+
         end
     end
 })
