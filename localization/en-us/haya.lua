@@ -53,7 +53,7 @@ return {
 					-- The Time Traveler's Clock is the translation used in the manhwa
 					-- But idk returner's winding clock sounds cooler
 					"Returner's Winding Clock",
-					"{s:0.5}from {C:edition,s:0.5}[SSR Class Revival Hunter]"
+					"{s:0.5}from {C:edition,s:0.5}[SSS Class Revival Hunter]"
 				},
 				text = {
 					{
