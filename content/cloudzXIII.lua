@@ -61,14 +61,11 @@ StockingStuffer.Present({
 })
 
 local function MostPlayedHand()
-    local _played = 0
-    local _handname = "High Card"
-    for k, v in pairs(G.GAME.hands) do
-        if v.played >= _played and v.visible then
-            if v.played > _played then
-                _played = v.played
-                _handname = k
-            end
+    local _handname, _played = 'High Card', -1
+    for hand_key, hand in pairs(G.GAME.hands) do
+        if hand.played > _played then
+            _played = hand.played
+            _handname = hand_key
         end
     end
     return _handname
@@ -79,26 +76,31 @@ StockingStuffer.Present({
 
     key = 'keyblade',
     pos = { x = 1, y = 0 },
-    config = { extra = { ready = true } },
+    config = { extra = { mult = 1, most_played = 'High Card', } },
 
-    can_use = function(self, card)
-        return card.ability.extra.ready
-    end,
-    use = function(self, card, area, copier)
-        card.ability.extra.ready = false
-        local _hand = MostPlayedHand()
-		SMODS.smart_level_up_hand(card, _hand, nil, 1)
-		return nil, true
-    end,
-    keep_on_use = function(self, card)
-        return true
-    end,
-    calculate = function(self, card, context)
-        if context.setting_blind and not context.blueprint and StockingStuffer.first_calculation then
-            card.ability.extra.ready = true
-            return {
-                message = 'Ready!'
+    loc_vars = function(self, info_queue, card)
+        return {
+            vars = {
+                card.ability.extra.mult,
+                card.ability.extra.most_played
             }
+        }
+    end,
+	update = function(self, card)
+		local _hand = MostPlayedHand()
+		card.ability.extra.most_played = _hand
+	end,
+
+    calculate = function(self, card, context)
+        if StockingStuffer.first_calculation and context.individual and context.cardarea == G.play then
+            local most_played = MostPlayedHand()
+            if most_played == context.scoring_name then
+                context.other_card.ability.perma_mult = (context.other_card.ability.perma_mult or 0) + card.ability.extra.mult
+                return {
+                    message = localize('k_upgrade_ex'),
+                    colour = G.C.MULT
+                }
+            end
         end
     end
 })
