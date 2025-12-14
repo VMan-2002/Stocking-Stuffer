@@ -50,7 +50,7 @@ return {
                     {'Lose {C:red}$#1#{} for',
                     'every card scored',
                     '{stocking}after{}',
-                    '{C:inactive,s:0.8}Eat my shorts'}
+                    '{C:inactive,s:0.8}eat my shorts'}
                 }
             },
             cloudzXIII_stocking_orange = {
