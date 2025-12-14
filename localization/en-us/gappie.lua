@@ -113,13 +113,13 @@ return {
                     },
                     {
                         'Gloom Shroom: {C:money}#4#{} to upgrade',
-                        'Ice Shroom: {C:money}#5#{} to upgrade',
+                        'Frost Shroom: {C:money}#5#{} to upgrade',
                         '{stocking}usable'
                     }
                 }
             },
             ['Crazy Dave_stocking_ice_shroom'] = {
-                name = 'Ice Shroom',
+                name = 'Frost Shroom',
                 text = {
                     {
                         'If played hand is a',
