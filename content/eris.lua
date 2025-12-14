@@ -144,7 +144,7 @@ StockingStuffer.Present({
 StockingStuffer.Present({
     developer = display_name,
     key = "corkscrew",
-    pos = { x = 0, y = 0 },
+    pos = { x = 5, y = 0 },
     config = { extra = 30 },
     loc_vars = function (self, info_queue, card)
         return { vars = { card.ability.extra }}

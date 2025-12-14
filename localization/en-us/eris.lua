@@ -59,7 +59,8 @@ return {
                 name = "Corkscrew",
                 text = {
                     "{C:blue}+#1#{} Chips, then",
-                    "{C:attention}swaps{} {C:blue}Chips{} and {C:mult}Mult{}"
+                    "{C:attention}swaps{} {C:blue}Chips{} and {C:mult}Mult{}",
+                    "{C:inactive}i ran out of coal"
                 }
             },
             Eris_stocking_present = {
