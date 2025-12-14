@@ -17,6 +17,7 @@ return {
                         '{C:inactive}(Can be used multiple times in a row){}',
                         '{C:inactive}(Currently {X:mult,C:white}X#1#{C:inactive} Mult stored){}',
                         '{C:inactive}(Currently {C:attention}#3#%{} {X:mult,C:white}X#2#{C:inactive} Mult loaded){}',
+                        '{stocking}after{}',
                     },
                 }
             },
@@ -26,7 +27,7 @@ return {
                     'Holds #1# cards',
                     'Replenishes after boss blind defeated',
                     '{C:attention}Use{} to draw 1 random card',
-                    --'{stocking}usable{}',
+                    '{stocking}usable{}',
                     'Cards:'
                 }
             },
@@ -34,7 +35,8 @@ return {
                 name = 'Polarizer',
                 text = {
                     {
-                        'Swaps {C:chips}Chips{} and {C:mult}Mult{}.'
+                        'Swaps {C:chips}Chips{} and {C:mult}Mult{}.',
+                        '{stocking}before{}'
                     },
                     {
                         'Change trigger time',
@@ -70,7 +72,8 @@ return {
         dictionary = {
             --d_magnet_state_0 = 'Never',
             d_magnet_state_0 = 'Before scoring',
-            d_magnet_state_1 = 'Before jokers'
+            d_magnet_state_1 = 'Before jokers',
+            d_shuffler_empty = 'Empty',
         }
     }
 }

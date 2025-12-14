@@ -13,6 +13,12 @@ SMODS.Atlas({
     px = 71,
     py = 95
 })
+SMODS.Atlas({
+    key = 'stocking_'..display_name..'_presents_gf',
+    path = display_name..'_presents_gf.png',
+    px = 71,
+    py = 95
+})
 
 
 -- Developer Template
@@ -29,7 +35,8 @@ StockingStuffer.Developer({
 -- key defaults to 'display_name_stocking_present'
 StockingStuffer.WrappedPresent({
     developer = display_name, -- DO NOT CHANGE
-
+    atlas = display_name..'_presents_gf',
+    artist = {'Golden Leaf'},
     pos = { x = 0, y = 0 },
 })
 
@@ -37,9 +44,9 @@ StockingStuffer.WrappedPresent({
 -- Note: You should make up to 5 Presents to fill your Wrapped Present!
 StockingStuffer.Present({
     developer = display_name, -- DO NOT CHANGE
-
     key = 'e_magic', -- keys are prefixed with 'display_name_stocking_' for reference
     pos = { x = 1, y = 0 },
+    artist = {'Jogla'},
     config = {
         extra = {
             is_releasing = false,
@@ -107,7 +114,7 @@ StockingStuffer.Present({
 -- Note: You should make up to 5 Presents to fill your Wrapped Present!
 StockingStuffer.Present({
     developer = display_name, -- DO NOT CHANGE
-
+    artist = {'Jogla'},
     key = 'magnet', -- keys are prefixed with 'display_name_stocking_' for reference
     pos = { x = 4, y = 0 },
     config = {
@@ -171,9 +178,8 @@ StockingStuffer.Present({
 
 StockingStuffer.Present({
     developer = display_name, -- DO NOT CHANGE
-
+    artist = {'Golden Leaf'},
     key = 'shuffler', -- keys are prefixed with 'display_name_stocking_' for reference
-    pos = { x = 1, y = 0 },
     config = {
         extra = {
             cards = {},
@@ -187,10 +193,8 @@ StockingStuffer.Present({
     },
     loc_vars = function (self, info_queue, card)
         if type(card.ability.extra.cards[1]) == "string" then
-            print("Reset")
             card.ability.extra.cards = {}
         end
-        if #card.ability.extra.cards == 0 then return end
 
         local cardareas = {}
 
@@ -213,24 +217,28 @@ StockingStuffer.Present({
             cardareas[math.ceil(i/5)]:emplace(c)
         end
 
-        local ui_areas = {
-            {n = G.UIT.R, config = {minh = 0.5}},
-        }
+        local ui_areas = {}
 
-        for _,v in ipairs(cardareas) do
-            table.insert(ui_areas,{n = G.UIT.R, config = {minh = 1.5}, nodes = {{n = G.UIT.O, config = {minh = 5, object = v}}}})
+        if next(cardareas) then
+            table.insert(ui_areas,{n = G.UIT.R, config = {minh = 0.5}})
+            for _,v in ipairs(cardareas) do
+                table.insert(ui_areas,{n = G.UIT.R, config = {minh = 1.5}, nodes = {{n = G.UIT.O, config = {minh = 5, object = v}}}})
+            end
+        else
+            table.insert(ui_areas,{n = G.UIT.R, nodes = {{n = G.UIT.T, config = {text = localize('d_shuffler_empty'), colour = G.C.UI.TEXT_INACTIVE, scale = 0.3}}}})
         end
 
         return {
             vars = {
-                card.ability.extra.amount
+                card.ability.extra.amount or 10
             },
             main_end = {
                 {n = G.UIT.R, config = {colour = G.C.CLEAR, minw = 0, minh = 0}, nodes = ui_areas}
             }
         }
     end,
-    atlas = display_name..'_presents',
+    atlas = display_name..'_presents_gf',
+    pos = {x = 2, y = 0},
     -- use and can_use are completely optional, delete if you do not need your present to be usable
     can_use = function(self, card)
         return next(card.ability.extra.cards) and G.GAME.blind.in_blind
@@ -252,7 +260,7 @@ StockingStuffer.Present({
         if context.ante_change and context.ante_end == true then
             card.ability.extra.cards = {}
             for i=1, card.ability.extra.amount do
-                local c = pseudorandom_element(G.P_CARDS,'miku')
+                local c = pseudorandom_element(G.P_CARDS)
                 local en = {}
                 local ed = {}
                 local se = {}
@@ -263,8 +271,8 @@ StockingStuffer.Present({
                 for k in pairs(G.P_SEALS) do se[#se+1] = k end
                 c.extra = {
                     enhancement = pseudorandom('miku',1,card.ability.extra.chances.enhancement) <= G.GAME.probabilities.normal and pseudorandom_element(en) or nil,
-                edition = pseudorandom('teto',1,card.ability.extra.chances.edition) <= G.GAME.probabilities.normal and pseudorandom_element(ed) or nil,
-                seal = pseudorandom('nero',1,card.ability.extra.chances.seal) <= G.GAME.probabilities.normal and pseudorandom_element(se) or nil
+                    edition = pseudorandom('teto',1,card.ability.extra.chances.edition) <= G.GAME.probabilities.normal and pseudorandom_element(ed) or nil,
+                    seal = pseudorandom('neru',1,card.ability.extra.chances.seal) <= G.GAME.probabilities.normal and pseudorandom_element(se) or nil
                 }
                 table.insert(card.ability.extra.cards,c)
             end
@@ -274,7 +282,7 @@ StockingStuffer.Present({
         if next(card.ability.extra.cards) then return end
         card.ability.extra.cards = {}
         for i=1, card.ability.extra.amount do
-            local c = pseudorandom_element(G.P_CARDS,'miku')
+            local c = pseudorandom_element(G.P_CARDS)
             local en = {}
             local ed = {}
             local se = {}
@@ -286,7 +294,7 @@ StockingStuffer.Present({
             c.extra = {
                 enhancement = pseudorandom('miku',1,card.ability.extra.chances.enhancement) <= G.GAME.probabilities.normal and pseudorandom_element(en) or nil,
                 edition = pseudorandom('teto',1,card.ability.extra.chances.edition) <= G.GAME.probabilities.normal and pseudorandom_element(ed) or nil,
-                seal = pseudorandom('nero',1,card.ability.extra.chances.seal) <= G.GAME.probabilities.normal and pseudorandom_element(se) or nil
+                seal = pseudorandom('neru',1,card.ability.extra.chances.seal) <= G.GAME.probabilities.normal and pseudorandom_element(se) or nil
             }
             table.insert(card.ability.extra.cards,c)
         end
