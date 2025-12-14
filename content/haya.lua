@@ -649,8 +649,8 @@ StockingStuffer.Present({
 StockingStuffer.Present({
 	developer = display_name,
 	key = "toxomister",
-	pos = { x = 0, y = 0 },
-	--pixel_size = { w = 56, h = 74 },
+	pos = { x = 5, y = 0 },
+	pixel_size = { w = 57, h = 92 },
 	config = { extra = { used = false } },
 	artist = { 'Aikoyori' },
 	can_use = function(self, card)
