@@ -96,7 +96,7 @@ StockingStuffer.Present({
 StockingStuffer.Present({
     developer = display_name,
     key = "prism",
-    pos = { x = 0, y = 0 },
+    pos = { x = 3, y = 0 },
     calculate = function (self, card, context)
         if next(G.jokers.cards) then
             local target = StockingStuffer.first_calculation and G.jokers.cards[1] or G.jokers.cards[#G.jokers.cards]
@@ -106,7 +106,8 @@ StockingStuffer.Present({
                 return ret
             end
         end
-    end
+    end,
+    pixel_size = { w = 68, h = 59 }
 })
 
 StockingStuffer.Present({
@@ -120,9 +121,15 @@ StockingStuffer.Present({
     calculate = function (self, card, context)
         if context.skipping_booster and StockingStuffer.first_calculation then
             card.ability.extra.chips = card.ability.extra.chips + card.ability.extra.copies
+            return {
+                message = localize { type = 'variable', key = 'a_chips', vars = { card.ability.extra.copies } }
+            }
         end
         if context.skip_blind and StockingStuffer.second_calculation then
             card.ability.extra.mult = card.ability.extra.mult + card.ability.extra.copies
+            return {
+                message = localize { type = 'variable', key = 'a_mult', vars = { card.ability.extra.copies } }
+            }
         end
         if context.joker_main then
             return {
