@@ -101,3 +101,27 @@ StockingStuffer.Present({
         end
     end
 })
+
+StockingStuffer.Present({
+    developer = display_name,
+    key = "air_riders",
+    pos = { x = 0, y = 0 },
+    config = { extra = { copies = 30, chips = 0, mult = 0 }},
+    loc_vars = function (self, info_queue, card)
+        return { vars = { card.ability.extra.copies, card.ability.extra.chips, card.ability.extra.mult }}
+    end,
+    calculate = function (self, card, context)
+        if context.skipping_booster and StockingStuffer.first_calculation then
+            card.ability.extra.chips = card.ability.extra.chips + card.ability.extra.copies
+        end
+        if context.skip_blind and StockingStuffer.second_calculation then
+            card.ability.extra.mult = card.ability.extra.mult + card.ability.extra.copies
+        end
+        if context.joker_main then
+            return {
+                chips = StockingStuffer.first_calculation and card.ability.extra.chips,
+                mult = StockingStuffer.second_calculation and card.ability.extra.mult
+            }
+        end
+    end
+})

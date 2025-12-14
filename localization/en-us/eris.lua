@@ -37,6 +37,23 @@ return {
                         "and {C:green}Uncommon {C:attention}Jokers"
                     }
                 }
+            },
+            Eris_stocking_air_riders = {
+                name = "#1# Copies of Kirby Air Riders",
+                text = {
+                    {
+                        "{C:chips}+#2#{} Chips",
+                        "Increases by {C:chips}+#1#{} when a",
+                        "booster pack is {C:attention}skipped",
+                        "{stocking}before"
+                    },
+                    {
+                        "{C:mult}+#3#{} Mult",
+                        "Increases by {C:mult}+#1#{} when",
+                        "a blind is {C:attention}skipped",
+                        "{stocking}after"
+                    }
+                }
             }
         }
     }
