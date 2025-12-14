@@ -33,8 +33,15 @@ StockingStuffer.Present({
 
     key = 'lukepot',
 
-    pos = { x = 0, y = 0 },
+    pos = { x = 1, y = 0 },
  	config = { extra = {denom = 1, increase = 1, increasedamount = 0} },
+
+		3 },
+
+    -- Adjusts the hitbox on the item
+    pixel_size = { w = 36, h = 30 },
+    -- Adjusts the scale (it's too small by default)
+    display_size = { w = 36 * 1.5, h = 30 * 1.5 },
 
  loc_vars = function(self, info_queue, card)
 		local numberator, denim = SMODS.get_probability_vars(card, 1, card.ability.extra.denom + card.ability.extra.increasedamount, "Lukewarm Potato")
