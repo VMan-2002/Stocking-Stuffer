@@ -271,7 +271,7 @@ StockingStuffer.Present({
                 }))
             end
             return {
-                dollars = -card.ability.extra.dollars,
+                dollars = -card.ability.extra.dollars * #context.scoring_hand,
             }
         end
     end

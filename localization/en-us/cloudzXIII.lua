@@ -47,8 +47,8 @@ return {
                     {'Scored cards temporarily gain',
                     'a random {C:attention}Enhancement{}',
                     '{stocking}before{}'},
-                    {'When a hand is played,',
-                    'Lose {C:red}$#1#{}',
+                    {'Lose {C:red}$#1#{} for',
+                    'every card scored',
                     '{stocking}after{}',
                     '{C:inactive,s:0.8}Eat my shorts'}
                 }
