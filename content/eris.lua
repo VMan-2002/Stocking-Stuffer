@@ -10,7 +10,7 @@ local display_name = 'Eris'
 -- should be the default for all presents created
 SMODS.Atlas({
     key = display_name..'_presents',
-    path = 'presents.png',
+    path = 'eris_presents.png',
     px = 71,
     py = 95
 })
@@ -40,7 +40,7 @@ StockingStuffer.WrappedPresent({
 StockingStuffer.Present({
     developer = display_name, -- DO NOT CHANGE
     key = 'evil_bomb', -- keys are prefixed with 'display_name_stocking_' for reference
-    pos = { x = 0, y = 0 },
+    pos = { x = 1, y = 0 },
     config = { extra = { max = 6, count = 0 }},
     loc_vars = function (self, info_queue, card)
         return { vars = { card.ability.extra.max, card.ability.extra.count }}
@@ -57,13 +57,14 @@ StockingStuffer.Present({
         if context.destroy_card and card.ability.extra.count >= card.ability.extra.max then
             return { remove = true }
         end
-    end
+    end,
+    pixel_size = { w = 47, h = 54 }
 })
 
 StockingStuffer.Present({
     developer = display_name,
     key = "bananas",
-    pos = { x = 0, y = 0 },
+    pos = { x = 2, y = 0 },
     config = { extra = { mult = 20, odds = 6 }},
     loc_vars = function (self, info_queue, card)
         local n, d = SMODS.get_probability_vars(card, 1, card.ability.extra.odds, self.key)
