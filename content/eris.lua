@@ -15,6 +15,7 @@ SMODS.Atlas({
     py = 95
 })
 
+G.C.STOCKING_ERIS = HEX('C09ED9')
 
 -- Developer Template
 -- Note: This object is how your WrappedPresent and Presents get linked
@@ -23,7 +24,7 @@ StockingStuffer.Developer({
 
     -- Replace '000000' with your own hex code
     -- Used to colour your name and some particles when opening your present
-    colour = HEX('C09ED9')
+    colour = G.C.STOCKING_ERIS
 })
 
 -- Wrapped Present Template
@@ -80,6 +81,22 @@ StockingStuffer.Present({
                 if SMODS.pseudorandom_probability(card, self.key, 1, card.ability.extra.odds) then
                     card.ability.extra.mult = card.ability.extra.mult - 1
                 end
+            end
+        end
+    end
+})
+
+StockingStuffer.Present({
+    developer = display_name,
+    key = "prism",
+    pos = { x = 0, y = 0 },
+    calculate = function (self, card, context)
+        if next(G.jokers.cards) then
+            local target = StockingStuffer.first_calculation and G.jokers.cards[1] or G.jokers.cards[#G.jokers.cards]
+            if target:is_rarity(1) or target:is_rarity(2) then
+                local ret = SMODS.blueprint_effect(card, target, context)
+                if ret then ret.colour = G.C.STOCKING_ERIS end
+                return ret
             end
         end
     end
