@@ -54,6 +54,13 @@ return {
                         "{stocking}after"
                     }
                 }
+            },
+            Eris_stocking_corkscrew = {
+                name = "Corkscrew",
+                text = {
+                    "{C:blue}+#1#{} Chips, then",
+                    "{C:attention}swaps{} {C:blue}Chips{} and {C:mult}Mult{}"
+                }
             }
         }
     }

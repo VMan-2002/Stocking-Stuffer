@@ -125,3 +125,21 @@ StockingStuffer.Present({
         end
     end
 })
+
+StockingStuffer.Present({
+    developer = display_name,
+    key = "corkscrew",
+    pos = { x = 0, y = 0 },
+    config = { extra = 30 },
+    loc_vars = function (self, info_queue, card)
+        return { vars = { card.ability.extra }}
+    end,
+    calculate = function (self, card, context)
+        if context.joker_main then
+            return {
+                chips = card.ability.extra,
+                extra = { swap = true }
+            }
+        end
+    end
+})
