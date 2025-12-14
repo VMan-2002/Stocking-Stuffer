@@ -36,7 +36,7 @@ StockingStuffer.Present({
     pos = { x = 1, y = 0 },
  	config = { extra = {denom = 1, increase = 1, increasedamount = 0} },
 
-		3 },
+	
 
     -- Adjusts the hitbox on the item
     pixel_size = { w = 36, h = 30 },
@@ -104,8 +104,16 @@ StockingStuffer.Present({
     developer = display_name, -- DO NOT CHANGE
 
     key = 'dailycalendar', -- keys are prefixed with 'display_name_stocking_' for reference
-    pos = { x = 0, y = 0 },	
+    pos = { x = 2, y = 0 },	
 
+
+
+    -- Adjusts the hitbox on the item
+    pixel_size = { w = 62, h = 59 },
+    -- Adjusts the scale (it's too small by default)
+    display_size = { w = 62 * 1.5, h = 59 * 1.5 },
+
+	
 loc_vars = function(self, info_queue, center)
 info_queue[#info_queue + 1] = G.P_CENTERS.j_joker
 end,
