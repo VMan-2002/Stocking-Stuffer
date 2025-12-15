@@ -51,7 +51,7 @@ StockingStuffer.Developer({
 
 StockingStuffer.WrappedPresent({
     developer = display_name,
-    artist = {"missingnumber"},
+    artist = {"MissingNumber"},
     atlas = "wrapped",
     pos = { x = 0, y = 0 },
     display_size = { w = 61*1.3, h = 62*1.3 }
@@ -59,7 +59,7 @@ StockingStuffer.WrappedPresent({
 
 StockingStuffer.Present({
     developer = display_name,
-    artist = {"missingnumber"},
+    artist = {"MissingNumber"},
     key = 'toybox',
     atlas = "toybox",
     pos = { x = 0, y = 0 },
@@ -153,7 +153,7 @@ StockingStuffer.Present({
 
 StockingStuffer.Present({
     developer = display_name,
-    artist = {"missingnumber"},
+    artist = {"MissingNumber"},
     key = 'decatone',
     atlas = "decatone",
     display_size = { w = 59*1.5, h = 49*1.5 },
@@ -230,7 +230,7 @@ local chests_plural = {}
 
 StockingStuffer.Present({
     developer = display_name,
-    artist = {"missingnumber"},
+    artist = {"MissingNumber"},
     key = 'chest', -- I wanted this fucker to be able to hold Jokers too, but it would mean that I have to MANUALLY EXCLUDE Jokers with add_to_deck function. That would be stupid!
     atlas = "chest",
     pos = { x = 0, y = 0 },
@@ -341,7 +341,7 @@ end
 
 StockingStuffer.Present({
     developer = display_name,
-    artist = {"missingnumber"},
+    artist = {"MissingNumber"},
     key = 'friend',
     atlas = "friend",
     display_size = { w = 55*1.5, h = 57*1.5 },
