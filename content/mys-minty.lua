@@ -95,6 +95,7 @@ StockingStuffer.Present({ --cute little jingle ball
 
 StockingStuffer.Present({ --nip toy
     developer = display_name,
+    artist = {"just_smolchild"},
     key = 'catnip',
     pos = { x = 2, y = 0 },
     -- atlas defaults to 'stocking_display_name_presents' as created earlier but can be overriden
@@ -324,6 +325,7 @@ StockingStuffer.Present({ --mysterious object (the wand, upside down)
 
 StockingStuffer.Present({ --string from the wand
     developer = display_name,
+    artist = {"just_smolchild"},
     key = 'wandpiece_string',
     pos = { x = 4, y = 2 },
     yes_pool_flag = "disassembly only :D", --Flag that never gets set, obviously
@@ -366,6 +368,7 @@ StockingStuffer.Present({ --string from the wand
 
 StockingStuffer.Present({ --feather from the wand
     developer = display_name,
+    artist = {"just_smolchild"},
     key = 'wandpiece_feather',
     pos = { x = 5, y = 2 },
     yes_pool_flag = "disassembly only :D", --Flag that never gets set, obviously
