@@ -346,6 +346,16 @@ function Card:remove_from_deck(from_debuff)
 	return rfd(self, from_debuff)
 end
 
+local ssc = StockingStuffer.calculate
+StockingStuffer.calculate = function (self, context)
+	local ret = ssc(self, context)
+	if context.ante_end then
+		G.GAME.haya_stocking_stuffer.consumables_added = {}
+		G.GAME.haya_stocking_stuffer.jokers_added = {}
+	end
+	return ret
+end
+
 -- Returner's Winding Clock
 StockingStuffer.Present({
 	developer = display_name,
@@ -371,10 +381,6 @@ StockingStuffer.Present({
 	calculate = function(self, card, context)
 		if context.game_over and context.end_of_round then
 			return ssr_revive(card)
-		end
-		if context.ante_end then
-			G.GAME.haya_stocking_stuffer.consumables_added = {}
-			G.GAME.haya_stocking_stuffer.jokers_added = {}
 		end
 	end,
 	update = function(self, card, dt)

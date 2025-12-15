@@ -20,6 +20,9 @@ StockingStuffer.colours = {
     usable = G.C.ETERNAL
 }
 
+-- Global Mod Calculate for hooking
+StockingStuffer.calculate = function(self, context) end
+
 --#region Objects
 
     --#region Developers
