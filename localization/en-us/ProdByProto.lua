@@ -27,8 +27,8 @@ return {
                 text = {
                     {
                         "When active:",
-                        "- Plays Balatro Christmas Drip Music",
-                        "- Also... ummm.. {X:red,C:white}#1#XMult{} {stocking}after{} scoring ig"
+                        "Plays Balatro Christmas Drip Music",
+                        "Also... ummm.. {X:red,C:white}X#1#{} Mult {stocking}after{} scoring ig"
                     },
                     {
                         "{C:inactive}You may use this present to{}",
@@ -42,22 +42,22 @@ return {
                 text = {
                     {
                         "If this effect is active,",
-                        "{C:mult}+#1# mult{}",
-                        "{C:inactive}increases by number of{}",
-                        "{C:inactive}presents at the end of the round{}",
+                        "{C:mult}+#1#{} Mult",
+                        "{C:inactive}Increases by 1 per present{}",
+                        "{C:inactive}owned at end of round{}",
                         "{stocking}before{}, {stocking}#4#{}"
                     },
                     {
                         "If this effect is active,",
-                        "{C:chips}+#2# chips{}",
-                        "{C:inactive}increases by 5 for each{}",
-                        "{C:inactive}present at the end of the round{}",
+                        "{C:chips}+#2#{} Chips",
+                        "{C:inactive}Increases by 5 per present{}",
+                        "{C:inactive}owned at end of round{}",
                         "{stocking}after{}, {stocking}#3#{}"
                     },
                     {
-                        "{C:inactive}- You may use this present to{}",
-                        "{C:inactive}toggle the active effect{}",
-                        "{C:inactive}- Values reset when used{}",
+                        "{C:inactive}You may use this present to{}",
+                        "{C:inactive}toggle its active effect{}",
+                        "{C:inactive}Values reset when used{}",
                         "{stocking}usable{}"
                     }
                 }
@@ -66,16 +66,15 @@ return {
                 name = "Vulpix Plushie :3",
                 text = {
                     {
-                        "{C:green}#1# in #2#{} chance of gaining",
-                        "an extra hand when a",
-                        "{C:planet}Planet{} card is sold",
-                        "{C:inactive}if not in a blind, gain hands{}",
-                        "{C:inactive}when blind is selected{}"
+                        "When a {C:planet}Planet{} card is sold,",
+                        "{C:green}#1# in #2#{} chance to gain {C:blue}+1{} hand",
+                        "{C:inactive}If not in a blind, hands will{}",
+                        "{C:inactive}increase when Blind is selected{}"
                     },
                     {
                         "If a {C:planet}Planet{} card was",
                         "sold this round, {C:green}#3# in #4#{} chance",
-                        "to lose a discard when hand is played",
+                        "to lose {C:red}1{} discard when hand is played",
                         "{stocking}after{}"
                     }
                 }
@@ -85,7 +84,7 @@ return {
                 text = {
                     {
                         "{C:green}#1# in #2#{} chance of gaining",
-                        "{X:stocking_xcheerback,C:stocking_xcheerfront}#3# X Festive Cheer{} when hand is played",
+                        "{X:stocking_xcheerback,C:stocking_xcheerfront}X#3#{} {X:stocking_xcheerback,C:stocking_xcheerfront}Festive Cheer{} when hand is played",
                         "{stocking}before{}"
                     },
                     {
