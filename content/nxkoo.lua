@@ -172,13 +172,14 @@ StockingStuffer.Present({
     coder = { "Nxkoo" },
     blueprint_compat = false,
     use = function(self, card)
-        for _, c in ipairs(G.playing_cards) do
+        for _, c in ipairs(G.hand.highlighted) do
             SMODS.change_base(c, c.base.suit, "Queen")
         end
+        G.hand:unhighlight_all()
         card.ability.used = true
     end,
     can_use = function(self, card)
-        return G.GAME.blind.in_blind and not card.ability.used
+        return G.hand and G.hand.highlighted and G.hand.highlighted[1] and not card.ability.used
     end,
     calculate = function(self, card, context)
         if context.end_of_round then
