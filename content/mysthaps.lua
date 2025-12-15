@@ -248,7 +248,7 @@ StockingStuffer.Present({
         return {vars = {
             difficulties[card.ability.extra.difficulty][2],
             number_format((G.GAME.blind and G.GAME.blind.in_blind) and G.GAME.blind.chips or card.ability.extra.blind_chips),
-            number_format(math.ceil((G.GAME.blind and G.GAME.blind.in_blind) and G.GAME.blind.chips or card.ability.extra.blind_chips * difficulties[card.ability.extra.difficulty][2])),
+            number_format(math.ceil(((G.GAME.blind and G.GAME.blind.in_blind) and G.GAME.blind.chips or card.ability.extra.blind_chips) * difficulties[card.ability.extra.difficulty][2])),
             difficulties[card.ability.extra.difficulty][3],
             difficulties[card.ability.extra.difficulty][1]
         }}
