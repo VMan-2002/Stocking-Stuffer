@@ -27,6 +27,16 @@ function Game:update(dt)
     return g
 end
 
+SMODS.Sound {
+    key = "presentskilled",
+    path = "presentkilled.ogg"
+}
+
+SMODS.Sound {
+    key = "playerskilled",
+    path = "playerkilled.ogg"
+}
+
 SMODS.Font {
     key = "DETERMINATION",
     path = "determination.ttf",
@@ -37,6 +47,16 @@ SMODS.Font {
     squish = 1,
     DESCSCALE = 1
 }
+
+local blood_gradient = SMODS.Gradient({
+    key = "blood",
+    colours = {
+        HEX("c30010"),
+        HEX("ff2c2c"),
+        HEX("f69697"),
+    },
+    cycle = 5
+})
 
 local display_name = 'Nxkoo'
 
@@ -51,7 +71,7 @@ SMODS.Atlas({
 -- Linkage of Wrapped & Presents
 StockingStuffer.Developer({
     name = display_name, -- DO NOT CHANGE
-    colour = HEX('780606')
+    colour = blood_gradient
 })
 
 StockingStuffer.WrappedPresent({
@@ -91,10 +111,12 @@ StockingStuffer.Present({
                 end
             end
             if right_joker then
+                play_sound('stocking_presentskilled', 1, 1)
                 SMODS.destroy_cards(right_joker)
             end
         else
             if G.STAGE == G.STAGES.RUN then
+                play_sound('stocking_playerskilled', 1, 1)
                 G.STATE = G.STATES.GAME_OVER; G.STATE_COMPLETE = false
             end
         end
