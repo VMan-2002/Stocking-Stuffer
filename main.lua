@@ -32,6 +32,62 @@ function Game:main_menu(change_context)
     local ret = gmm(self, change_context)
 
     if StockingStuffer.config.menu then
+        -- Creates StockingStuffer Logo Sprite
+        local SC_scale = 1.1 * (G.debug_splash_size_toggle and 0.8 or 1)
+        G.SPLASH_STOCKSTUFF_LOGO = Sprite(0, 0,
+            4.5 * SC_scale,
+            4.5 * SC_scale * (G.ASSET_ATLAS["stocking_logo"].py / G.ASSET_ATLAS["stocking_logo"].px),
+            G.ASSET_ATLAS["stocking_logo"], { x = 0, y = 0 }
+        )
+        G.SPLASH_STOCKSTUFF_LOGO:set_alignment({
+            major = G.title_top,
+            type = 'cm',
+            bond = 'Strong',
+            offset = { x = 0, y = 3.25 }
+        })
+        G.SPLASH_STOCKSTUFF_LOGO:define_draw_steps({ {
+            shader = 'dissolve',
+        } })
+
+        -- Define logo properties
+        G.SPLASH_STOCKSTUFF_LOGO.tilt_var = { mx = 0, my = 0, dx = 0, dy = 0, amt = 0 }
+
+        G.SPLASH_STOCKSTUFF_LOGO.dissolve_colours = { StockingStuffer.colours.primary, StockingStuffer.colours.secondary }
+        G.SPLASH_STOCKSTUFF_LOGO.dissolve = 1
+
+        G.SPLASH_STOCKSTUFF_LOGO.states.collide.can = true
+
+        -- Define node functions for Logo
+        function G.SPLASH_STOCKSTUFF_LOGO:click()
+            play_sound('button', 1, 0.3)
+            G.FUNCS['openModUI_stocking']()
+        end
+
+        function G.SPLASH_STOCKSTUFF_LOGO:hover()
+            G.SPLASH_STOCKSTUFF_LOGO:juice_up(0.05, 0.03)
+            play_sound('paper1', math.random() * 0.2 + 0.9, 0.35)
+            Node.hover(self)
+        end
+
+        function G.SPLASH_STOCKSTUFF_LOGO:stop_hover() Node.stop_hover(self) end
+
+        --Logo animation
+        G.E_MANAGER:add_event(Event({
+            trigger = 'after',
+            delay = change_context == 'splash' and 3.6 or change_context == 'game' and 4 or 1,
+            blockable = false,
+            blocking = false,
+            func = (function()
+                play_sound('magic_crumple' .. (change_context == 'splash' and 2 or 3),
+                    (change_context == 'splash' and 1 or 1.3), 0.9)
+                play_sound('whoosh1', 0.2, 0.8)
+                ease_value(G.SPLASH_STOCKSTUFF_LOGO, 'dissolve', -1, nil, nil, nil,
+                    change_context == 'splash' and 2.3 or 0.9)
+                G.VIBRATION = G.VIBRATION + 1.5
+                return true
+            end)
+        }))
+
         -- make the title screen use different background colors
         G.SPLASH_BACK:define_draw_steps({ {
             shader = 'splash',
@@ -52,8 +108,8 @@ function Game:main_menu(change_context)
         end 
         title_card:set_ability(replace_present)
         title_card.children.front = nil
-        title_card.T.w = title_card.T.w*1.2
-        title_card.T.h = title_card.T.h*1.2
+        title_card.T.w = title_card.T.w*1.1
+        title_card.T.h = title_card.T.h*1.1
     end
 
     return ret
@@ -331,6 +387,13 @@ SMODS.Atlas({
     atlas_table = 'ANIMATION_ATLAS',
     frames = 4,
     fps = 5
+})
+
+SMODS.Atlas({
+    key = 'logo',
+    path = 'logo.png',
+    px = 231,
+    py = 117
 })
 
 --#endregion
