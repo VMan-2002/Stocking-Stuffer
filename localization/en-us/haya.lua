@@ -73,7 +73,7 @@ return {
 					"{s:0.5}from {C:edition,s:0.5}[Snap The Sentinel]"
 				},
 				text = {
-					"Every {C:attention}#1#th{} played card",
+					"Every {C:attention}#1#th{} scored card",
 					"has a {C:dark_edition,E:1}random effect{}",
 					"{C:inactive}(#2#/#1# cards)",
 					"{stocking}after{}"
