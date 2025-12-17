@@ -834,6 +834,14 @@ function juice_card_until(card, eval_func, first, delay)
     }))
 end
 
+-- Don't alert Dummy cards
+local cua = Card.update_alert
+function Card:update_alert()
+    if self.config.center_key ~= 'j_stocking_dummy' then
+        cua(self)
+    end
+end
+
 --#endregion
 
 --#region File Loading (Totally stolen from Hot Potato)
