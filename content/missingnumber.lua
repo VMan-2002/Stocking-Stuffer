@@ -163,7 +163,7 @@ StockingStuffer.Present({
         return { vars = { card.ability.extra.xmult_base, -card.ability.extra.loss, card.ability.extra.gain, card.ability.extra.xmult, card.ability.extra.active and "active" or "inactive" } }
     end,
     calculate = function(self, card, context)
-        if context.joker_main and card.ability.extra.active then
+        if context.joker_main and card.ability.extra.active and StockingStuffer.second_calculation then
             card.ability.extra.active = false
             SMODS.calculate_effect({ xmult = card.ability.extra.xmult }, card)
             SMODS.scale_card(card, { ref_table = card.ability.extra, ref_value = "xmult", scalar_value = "loss" })
