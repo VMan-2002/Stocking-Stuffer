@@ -60,7 +60,7 @@ return {
                     },
                     {
                         "{C:green}#1# in #2#{} chance this Present",
-                        "is destroyed at end of round", --# "destoyred" son 😭😭😭😭😭😭😭😭😭😭😭 -Nxkoo
+                        "is destroyed at end of round",
                         '{stocking}after{}',
                     },
                 }
