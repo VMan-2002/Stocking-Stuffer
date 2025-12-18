@@ -130,6 +130,7 @@ StockingStuffer.Present({
 
     key = 'tablet',
     pos = { x = 2, y = 0 },
+    pixel_size = {w = 62, h = 62},
     config = {
         extra = {
             destroyed = false
@@ -170,6 +171,7 @@ StockingStuffer.Present({
 
     key = 'pendant_winter',
     pos = { x = 3, y = 0 },
+    pixel_size = {w = 46, h = 46},
     config = {
         extra = {
             cards_left = 0
@@ -243,6 +245,7 @@ StockingStuffer.Present({
 
     key = 'pendant_spring',
     pos = { x = 3, y = 1 },
+    pixel_size = {w = 46, h = 46},
     no_collection = true,
     in_pool = function() return false end,
     calculate = function(self, card, context)
@@ -315,6 +318,7 @@ StockingStuffer.Present({
 
     key = 'pendant_summer',
     pos = { x = 3, y = 2 },
+    pixel_size = {w = 46, h = 46},
     no_collection = true,
     in_pool = function() return false end,
     calculate = function(self, card, context)
@@ -392,6 +396,7 @@ StockingStuffer.Present({
 
     key = 'pendant_fall',
     pos = { x = 3, y = 3 },
+    pixel_size = {w = 46, h = 46},
     no_collection = true,
     in_pool = function() return false end,
     calculate = function(self, card, context)
@@ -463,6 +468,7 @@ StockingStuffer.Present({
     artist = {'pangaea47'},
     key = 'ranchers',
     pos = { x = 4, y = 0 },
+    pixel_size = {w = 59, h = 40},
 
     calculate = function(self, card, context)
         if context.using_consumeable and context.consumeable.ability.set == 'Tarot' and G.consumeables.config.card_limit > #G.consumeables.cards and StockingStuffer.second_calculation then
@@ -505,6 +511,7 @@ StockingStuffer.Present({
     artist = {'pangaea47'},
     key = 'giant',
     pos = { x = 5, y = 0 },
+    pixel_size = {w = 32, h = 84},
 
     calculate = function(self, card, context)
         --Thing that might be a Bug, or a Feature: Having two of these starts swapping it back and forth every hand.
