@@ -286,10 +286,10 @@ local function ssr_revive(card)
 										v:start_dissolve({ G.C.RED })
 									end
 								end
+								card:start_dissolve({ G.C.GOLD })
 								return true
 							end
 						})
-						draw_card(G.play, G.stocking_present, nil, nil, nil, card)
 
 						G.GAME.haya_stocking_stuffer.rwc_active = nil
 						G.CONTROLLER.locked = nil
@@ -347,7 +347,7 @@ function Card:remove_from_deck(from_debuff)
 end
 
 local ssc = StockingStuffer.calculate
-StockingStuffer.calculate = function (self, context)
+StockingStuffer.calculate = function(self, context)
 	local ret = ssc(self, context)
 	if context.ante_end then
 		G.GAME.haya_stocking_stuffer.consumables_added = {}
