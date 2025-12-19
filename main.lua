@@ -221,7 +221,13 @@ end
     StockingStuffer.Developers = PotatoPatchUtils.Developers
     StockingStuffer.Developer = PotatoPatchUtils.Developer
     --#endregion
+    local achievement_inc = 0
 
+    SMODS.Atlas({
+        key = 'achievements',
+        path = 'achievements.png',
+        px = 66, py = 66
+    })
     --#region WrappedPresent
     StockingStuffer.WrappedPresent = SMODS.Consumable:extend({
         required_params = {
@@ -240,6 +246,65 @@ end
                 darken(G.C.RED, 0.2), G.C.GREEN
             }
             SMODS.Consumable.inject(self)
+            local dev_name = StockingStuffer.Developers[self.developer].loc and localize(StockingStuffer.Developers[self.developer].loc) or StockingStuffer.Developers[self.developer].name
+            SMODS.Achievement({
+                key = 'stocking_open_'..self.developer,
+                loc_txt = {
+                    name = dev_name..'\'s Present',
+                    description = {
+                        'Open a present',
+                        'from '..dev_name
+                    }
+                },
+                atlas = 'stocking_achievements',
+                hidden_name = false,
+                bypass_all_unlocked = true,
+                order = achievement_inc,
+                developer = self.developer,
+                unlock_condition = function(self, args)
+                    if args.present_opened and args.developer == self.developer then return true end
+                end,
+                mod = StockingStuffer
+            })
+            achievement_inc = achievement_inc + 1
+            SMODS.Achievement({
+                key = 'stocking_collect_'..self.developer,
+                loc_txt = {
+                    name = dev_name..'\'s Collection',
+                    description = {
+                        'Collect all of',
+                        dev_name..'\'s presents'
+                    }
+                },
+                atlas = 'stocking_achievements',
+                loc_vars = function()
+                    print('test')
+                end,
+                hidden_name = false,
+                bypass_all_unlocked = true,
+                order = achievement_inc,
+                developer = self.developer,
+                unlock_condition = function(self, args)
+                    if args.present_opened and args.developer == self.developer then
+                        G.PROFILES[G.SETTINGS.profile].Stocking_Collected_Tracker = G.PROFILES[G.SETTINGS.profile].Stocking_Collected_Tracker or {}
+                        G.PROFILES[G.SETTINGS.profile].Stocking_Collected_Tracker[self.developer] = G.PROFILES[G.SETTINGS.profile].Stocking_Collected_Tracker[self.developer] or {}
+                        G.PROFILES[G.SETTINGS.profile].Stocking_Collected_Tracker[self.developer][args.current_gift] = true
+
+                        local all_collected = true
+                        for _, present in ipairs(G.P_CENTER_POOLS.stocking_present) do
+                            if present.developer == self.developer and not present.no_collection then
+                                if not G.PROFILES[G.SETTINGS.profile].Stocking_Collected_Tracker[self.developer][present.key] then
+                                    all_collected = false
+                                    break
+                                end
+                            end
+                        end
+                        return all_collected
+                    end
+                end,
+                mod = StockingStuffer
+            })
+            achievement_inc = achievement_inc + 1
         end,
         pre_inject_class = function(self, func)
             for _, obj in pairs(self.obj_table) do
@@ -312,6 +377,17 @@ end
                         trigger = 'immediate',
                         func = function()
                             draw_card(G.gift, G.stocking_present, nil, 'up', nil, gift)
+                            return true
+                        end
+                    }))
+                    G.E_MANAGER:add_event(Event({
+                        trigger = 'after', delay = 0.4,
+                        func = function()
+                            check_for_unlock({
+                                present_opened = true,
+                                developer = self.developer,
+                                current_gift = gift.config.center_key
+                            })                
                             return true
                         end
                     }))

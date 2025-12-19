@@ -136,6 +136,7 @@ SMODS.Achievement{
     bypass_all_unlocked = true,
     hidden_text = true,
     reset_on_startup = true,
+    order = 10000,
     unlock_condition = function (self, args)
         if args and args.honk == "honk" then
             return true
