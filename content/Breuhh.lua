@@ -175,6 +175,7 @@ SMODS.Sticker({
     pos = { x = 4, y = 3 },
     hide_badge = true,
     default_compat = false,
+    no_collection = true
 })
 
 StockingStuffer.Present({

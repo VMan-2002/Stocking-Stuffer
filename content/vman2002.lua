@@ -151,6 +151,7 @@ local kittyseal = SMODS.Seal{
 	pos = {x = 5, y = 0},
 	vman_ch_icon = 0, --maya
 	badge_colour = HEX("FF3DEE"),
+	no_collection = true,
     loc_vars = function(self, info_queue, card)
 		Gt_kittyseal_card = card
         return {
