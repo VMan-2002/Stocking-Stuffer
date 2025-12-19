@@ -771,14 +771,12 @@ local stocking_stuffer_card_juice_up = Card.juice_up
 function Card:juice_up(scale, rot)
     if self.area and not self.ability.no_stocking and not self.states.hover.is and ((self.area == G.jokers and StockingStuffer.states.slot_visible ~= 1) or (self.area == G.stocking_present and StockingStuffer.states.slot_visible ~= -1)) and not self.juicing_until and StockingStuffer.config.switch_on_trigger then
         G.FUNCS.toggle_jokers_presents()
-        for i=1, 2 do
-            G.E_MANAGER:add_event(Event({
-                trigger = 'after', delay = 0.7,
-                func = function()
-                    return true
-                end
-            }), nil, true)
-        end
+        G.E_MANAGER:add_event(Event({
+            trigger = 'after', delay = 0.7,
+            func = function()
+                return true
+            end
+        }), nil, true)
     end
     stocking_stuffer_card_juice_up(self, scale, rot)
 end
@@ -787,14 +785,12 @@ local stocking_stuffer_card_start_dissolve = Card.start_dissolve
 function Card:start_dissolve(...)
     if self.area and not self.ability.no_stocking and not self.states.hover.is and ((self.area == G.jokers and StockingStuffer.states.slot_visible ~= 1) or (self.area == G.stocking_present and StockingStuffer.states.slot_visible ~= -1)) and StockingStuffer.config.switch_on_trigger then
         G.FUNCS.toggle_jokers_presents()
-        for i=1, 2 do
-            G.E_MANAGER:add_event(Event({
-                trigger = 'after', delay = 0.7,
-                func = function()
-                    return true
-                end
-            }), nil, true)
-        end
+        G.E_MANAGER:add_event(Event({
+            trigger = 'after', delay = 0.7,
+            func = function()
+                return true
+            end
+        }), nil, true)
     end
     stocking_stuffer_card_start_dissolve(self, ...)
 end
@@ -806,14 +802,12 @@ function card_eval_status_text(card, ...)
         func = function()  
             if ((card.area == G.jokers and StockingStuffer.states.slot_visible ~= 1) or (card.area == G.stocking_present and StockingStuffer.states.slot_visible ~= -1)) and StockingStuffer.config.switch_on_trigger then
                 G.FUNCS.toggle_jokers_presents()
-                for i=1, 2 do
-                    G.E_MANAGER:add_event(Event({
-                        trigger = 'after', delay = 0.7,
-                        func = function()                
-                            return true
-                        end
-                    }), nil, true)
-                end
+                G.E_MANAGER:add_event(Event({
+                    trigger = 'after', delay = 0.7,
+                    func = function()                
+                        return true
+                    end
+                }), nil, true)
             end
             return true
         end
@@ -911,41 +905,41 @@ local nativefs = NFS
 local path_len = string.len(SMODS.current_mod.path) + 1
 
 local function load_file_native(path)
-	if not path or path == "" then
-		error("No path was provided to load.")
-	end
-	local file_path = path
-	local file_content, err = NFS.read(file_path)
-	if not file_content then
-		return nil,
-			"Error reading file '" .. path .. "' for mod with ID '" .. SMODS.current_mod.id .. "': " .. err
-	end
-	local short_path = string.sub(path, path_len, path:len())
-	local chunk, err = load(file_content, "=[SMODS " .. SMODS.current_mod.id .. ' "' .. short_path .. '"]')
-	if not chunk then
-		return nil,
-			"Error processing file '" .. path .. "' for mod with ID '" .. SMODS.current_mod.id .. "': " .. err
-	end
-	return chunk
+    if not path or path == "" then
+        error("No path was provided to load.")
+    end
+    local file_path = path
+    local file_content, err = NFS.read(file_path)
+    if not file_content then
+        return nil,
+        "Error reading file '" .. path .. "' for mod with ID '" .. SMODS.current_mod.id .. "': " .. err
+    end
+    local short_path = string.sub(path, path_len, path:len())
+    local chunk, err = load(file_content, "=[SMODS " .. SMODS.current_mod.id .. ' "' .. short_path .. '"]')
+    if not chunk then
+        return nil,
+        "Error processing file '" .. path .. "' for mod with ID '" .. SMODS.current_mod.id .. "': " .. err
+    end
+    return chunk
 end
 local blacklist = {
     ["template.lua"] = true,
 }
 local function load_files(path)
-	local info = nativefs.getDirectoryItemsInfo(path)
-	table.sort(info, function(a, b)
-		return a.name < b.name
-	end)
-	for _, v in ipairs(info) do
-		if string.find(v.name, ".lua") and not blacklist[v.name] then -- no X.lua.txt files or whatever unless they are also lua files
-			local f, err = load_file_native(path .. "/" .. v.name)
-			if f then
-				f()
-			else
-				error("error in file " .. v.name .. ": " .. err)
-			end
-		end
-	end
+    local info = nativefs.getDirectoryItemsInfo(path)
+    table.sort(info, function(a, b)
+        return a.name < b.name
+    end)
+    for _, v in ipairs(info) do
+        if string.find(v.name, ".lua") and not blacklist[v.name] then -- no X.lua.txt files or whatever unless they are also lua files
+            local f, err = load_file_native(path .. "/" .. v.name)
+            if f then
+                f()
+            else
+                error("error in file " .. v.name .. ": " .. err)
+            end
+        end
+    end
 end
 local path = SMODS.current_mod.path .. '/content'
 load_files(path)
