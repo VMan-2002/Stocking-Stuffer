@@ -138,7 +138,7 @@ StockingStuffer.Present({
         mult = 0, cost = 1.5, used = 0
     }},
     can_use = function(self, card)
-        return (G.GAME.dollars >= math.ceil(math.pow(card.ability.extra.cost, card.ability.extra.used)))
+        return (to_big(G.GAME.dollars) >= to_big(math.ceil(math.pow(card.ability.extra.cost, card.ability.extra.used))))
     end,
     use = function(self, card, area, copier) 
         ease_dollars(-math.ceil(math.pow(card.ability.extra.cost, card.ability.extra.used)))
@@ -240,7 +240,7 @@ StockingStuffer.Present({
     end,
     calc_dollar_bonus = function(self, card)
         -- fuck you, go add talisman compat yourself
-        if G.GAME.chips <= math.ceil(card.ability.extra.blind_chips * difficulties[card.ability.extra.difficulty][2]) then
+        if to_big(G.GAME.chips) <= to_big(math.ceil(card.ability.extra.blind_chips * difficulties[card.ability.extra.difficulty][2])) then
             return difficulties[card.ability.extra.difficulty][3]
         end
     end,
