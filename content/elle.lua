@@ -235,7 +235,7 @@ StockingStuffer.Present({
     end,
 	
     can_use = function(self, card)
-		return G.GAME.dollars >= card.ability.extra.cost
+		return to_big(G.GAME.dollars) >= to_big(card.ability.extra.cost)
     end
 })
 
