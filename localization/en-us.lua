@@ -29,7 +29,7 @@ return {
             stocking_stuffer_to_jokers = 'Show Jokers',
             stocking_stuffer_to_presents = 'Show Presents',
             stocking_stuffer_present_count = 'Presents: ',
-            stocking_stuffer_under_the_tree = 'Under the tree',
+            stocking_stuffer_under_the_tree = 'Under the Tree',
             PotatoPatchUtils_first_time_disable = "Do not show again",
             stocking_stuffer_received = ' received!',
 
