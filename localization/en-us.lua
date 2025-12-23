@@ -24,7 +24,7 @@ return {
             stocking_stuffer_to_jokers = 'Show Jokers',
             stocking_stuffer_to_presents = 'Show Presents',
             stocking_stuffer_present_count = 'Presents: ',
-            stocking_stuffer_under_the_tree = 'Under the tree',
+            stocking_stuffer_under_the_tree = 'Under the Tree',
             stocking_stuffer_before = 'before',
             stocking_stuffer_after = 'after',
             stocking_stuffer_usable = 'usable',
