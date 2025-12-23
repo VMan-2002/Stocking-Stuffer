@@ -25,8 +25,8 @@ return {
                 },
                 text = {
                     {
-                    '{X:dark_edition,C:white}^^2{} Mult for',
-                    'each {C:spades}Spades{} card {C:attention}held in hand',
+                    "Played {C:attention}unscoring{} numbered",
+                    "cards give {X:dark_edition,C:white}^#1#{} Mult",
                     '{stocking}after{}'
                     }
                 }
@@ -82,6 +82,11 @@ return {
                     "{C:inactive,s:0.8}(Merry Christmas!)"
                 }
             },
+        }
+    },
+    misc = {
+        v_dictionary = {
+            a_emult = "^#1# Mult"
         }
     }
 }
