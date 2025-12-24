@@ -116,6 +116,7 @@ StockingStuffer.Present({
 
                     G.STATE = G.STATES.GAME_OVER;
                     G.STATE_COMPLETE = false
+                    G.TAROT_INTERRUPT = nil
                     return true
                 end
             }))
