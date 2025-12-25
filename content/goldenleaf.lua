@@ -334,7 +334,7 @@ StockingStuffer.Present({
         local hpt = card.ability.extra
         if hpt.state == "paint" then
         -- paintbrush
-            if StockingStuffer.first_calculation and context.individual and context.cardarea == G.play and not context.end_of_round then
+            if StockingStuffer.first_calculation and context.individual and not context.repetition and context.cardarea == G.play and not context.end_of_round then
                 local carde = context.other_card
                 if carde.config.center.key == "c_base" and next(hpt.list_of_enhancements) then
                     local ind = hpt.list_of_enhancements[#hpt.list_of_enhancements]
