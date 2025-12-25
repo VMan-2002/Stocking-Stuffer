@@ -372,7 +372,7 @@ StockingStuffer.Present({
             end
         else
         -- whiteout
-            if StockingStuffer.second_calculation and context.individual and context.cardarea == G.play and not context.end_of_round then
+            if StockingStuffer.second_calculation and context.individual and not context.repetition and context.cardarea == G.play and not context.end_of_round then
                 local carde = context.other_card
                 if carde.config.center.key ~= "c_base" then
                     table.insert(hpt.list_of_enhancements, context.other_card.config.center.key)
