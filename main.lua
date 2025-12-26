@@ -1032,6 +1032,13 @@ end
 
 -- Area toggle button func
 G.FUNCS.toggle_jokers_presents = function(e)
+    G.E_MANAGER:add_event(Event({
+        blocking = false,
+        blockable = true,
+        func = function()
+            return not StockingStuffer.states.areas_moving;
+        end
+    }))
     if not G.PROFILES[G.SETTINGS.profile].stocking_stuffer_completed then
         G.PROFILES[G.SETTINGS.profile].stocking_stuffer_completed = true
         local sprite = SMODS.create_sprite(0,0, 3*(231/117), 3, 'stocking_logo', {x=0,y=0})
