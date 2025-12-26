@@ -368,10 +368,6 @@ StockingStuffer.Present({
             end
             if active then delay(1) end
         end
-        if StockingStuffer.second_calculation and context.end_of_round and context.main_eval then
-            local c = pseudorandom_element(G.hand.cards)
-            SMODS.destroy_cards(c)
-        end
     end,
     -- This function counts the number of 5s in the deck
     count_fives = function(self)
