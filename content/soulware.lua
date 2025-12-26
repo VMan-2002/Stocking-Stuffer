@@ -251,9 +251,6 @@ StockingStuffer.Present({
                 if not newcard.ability then
                     newcard.ability = {}
                 end
-                if not newcard.ability.extra then
-                    newcard.ability.extra = {}
-                end
                 newcard.ability.MGB_clay_spawned = true
             end
         end
@@ -325,7 +322,7 @@ SMODS.DrawStep {
     key = 'evil_clay_thing',
     order = 25, -- depends on when you want it to apply (layering thing)
     func = function(self, layer)
-        if self.ability and self.ability.extra and type(self.ability.extra) == "table" and self.ability.MGB_clay_spawned then
+        if self.ability and self.ability.MGB_clay_spawned then
             self.children.center:draw_shader('stocking_clay', nil, self.ARGS.send_to_shader) -- used for anything almost else
         end
     end,
