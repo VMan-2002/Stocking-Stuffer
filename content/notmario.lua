@@ -590,7 +590,7 @@ SMODS.PokerHandPart {
 
 for k, hand in pairs(SMODS.PokerHands) do
     local old_hand_evaluate = hand.evaluate
-    hand.evaluate = function (parts)
+    hand.evaluate = function (parts, hand)
         local has_active_plushie = false
         for _, present in pairs(SMODS.find_card("notmario_stocking_plushie")) do
             if present.ability.extra.active then has_active_plushie = true end
@@ -604,7 +604,7 @@ for k, hand in pairs(SMODS.PokerHands) do
                 return {}
             end
         end
-        return old_hand_evaluate(parts)
+        return old_hand_evaluate(parts, hand)
     end
 end
 
