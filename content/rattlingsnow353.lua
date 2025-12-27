@@ -256,13 +256,18 @@ StockingStuffer.Present({
 
     use = function(self, card)
         card.ability.extra.ready = false
-        local pool = {}
-        for k, v in pairs(G.P_CENTER_POOLS['stocking_present']) do
-            if v.key ~= card.config.center.key then
-                pool[#pool+1] = v.key
+        local pool = get_current_pool('stocking_present')
+        for k, v in pairs(pool) do
+            if v == card.config.center.key then
+                v = 'UNAVAILABLE'
             end
         end
         local ran_pres = pseudorandom_element(pool, pseudoseed('portable_slot'))
+        local i = 1
+        while ran_pres == 'UNAVAILABLE' do
+            ran_pres = pseudorandom_element(pool, pseudoseed('portable_slot'..i))
+            i = i + 1
+        end
         RSSS_reroll_card(card, ran_pres, 'stocking_present', 'portable_slot', card.config.center.key)
     end,
     keep_on_use = function()
