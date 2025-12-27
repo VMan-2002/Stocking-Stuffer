@@ -1284,13 +1284,15 @@ end
 local stocking_stuffer_card_juice_up = Card.juice_up
 function Card:juice_up(scale, rot)
     if self.area and not self.ability.no_stocking and not self.states.hover.is and ((self.area == G.jokers and StockingStuffer.states.slot_visible ~= 1) or (self.area == G.stocking_present and StockingStuffer.states.slot_visible ~= -1)) and not self.juicing_until and StockingStuffer.config.switch_on_trigger then
-        G.FUNCS.toggle_jokers_presents()
-        G.E_MANAGER:add_event(Event({
-            trigger = 'after', delay = 0.7,
-            func = function()
-                return true
-            end
-        }), nil, true)
+        if not Talisman or Talisman and not Talisman.config_file.disable_anims then
+            G.FUNCS.toggle_jokers_presents()
+            G.E_MANAGER:add_event(Event({
+                trigger = 'after', delay = 0.7,
+                func = function()
+                    return true
+                end
+            }), nil, true)
+        end
     end
     stocking_stuffer_card_juice_up(self, scale, rot)
 end
@@ -1298,13 +1300,15 @@ end
 local stocking_stuffer_card_start_dissolve = Card.start_dissolve
 function Card:start_dissolve(...)
     if self.area and not self.ability.no_stocking and not self.states.hover.is and ((self.area == G.jokers and StockingStuffer.states.slot_visible ~= 1) or (self.area == G.stocking_present and StockingStuffer.states.slot_visible ~= -1)) and StockingStuffer.config.switch_on_trigger then
-        G.FUNCS.toggle_jokers_presents()
-        G.E_MANAGER:add_event(Event({
-            trigger = 'after', delay = 0.7,
-            func = function()
-                return true
-            end
-        }), nil, true)
+        if not Talisman or Talisman and not Talisman.config_file.disable_anims then
+            G.FUNCS.toggle_jokers_presents()
+            G.E_MANAGER:add_event(Event({
+                trigger = 'after', delay = 0.7,
+                func = function()
+                    return true
+                end
+            }), nil, true)
+        end
     end
     stocking_stuffer_card_start_dissolve(self, ...)
 end
@@ -1315,13 +1319,15 @@ function card_eval_status_text(card, ...)
         trigger = 'immediate',
         func = function()  
             if ((card.area == G.jokers and StockingStuffer.states.slot_visible ~= 1) or (card.area == G.stocking_present and StockingStuffer.states.slot_visible ~= -1)) and StockingStuffer.config.switch_on_trigger then
-                G.FUNCS.toggle_jokers_presents()
-                G.E_MANAGER:add_event(Event({
-                    trigger = 'after', delay = 0.7,
-                    func = function()                
-                        return true
-                    end
-                }), nil, true)
+                if not Talisman or Talisman and not Talisman.config_file.disable_anims then
+                    G.FUNCS.toggle_jokers_presents()
+                    G.E_MANAGER:add_event(Event({
+                        trigger = 'after', delay = 0.7,
+                        func = function()                
+                            return true
+                        end
+                    }), nil, true)
+                end
             end
             return true
         end
