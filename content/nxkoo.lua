@@ -1,29 +1,63 @@
 -- HUGE shoutout to Somethingcom525 for helping me code this
 local oldsetcost = Card.set_cost
 function Card:set_cost()
-	local g = oldsetcost(self)
-	if next(SMODS.find_card("Nxkoo_stocking_dealmaker")) then
-		self.cost = pseudorandom("dealmaker_cost_" .. self.sort_id, 0.001, 100)
-	end
-	return g
+    if self.stocking_being_bought then
+        -- Stop this from running so the price the player clicked on doesn't get clobbered
+        -- (this gets run when buying a card due to Gift Receipt in bagels.lua)
+        return
+    end
+    local g = oldsetcost(self)
+    if next(SMODS.find_card("Nxkoo_stocking_dealmaker")) then
+        self.cost = pseudorandom("dealmaker_cost_" .. self.sort_id, 0, 100)
+        if self.cost == 0 then
+            self.cost = 0.001
+        end
+    end
+    return g
 end
 
 local cost_dt = 0
 local oldgameupdate = Game.update
 function Game:update(dt)
-	local g = oldgameupdate(self, dt)
-	if G.shop and G.jokers and next(SMODS.find_card("Nxkoo_stocking_dealmaker")) then
-		cost_dt = cost_dt + dt
-		if cost_dt > 0.2 then
-			cost_dt = cost_dt - 0.2
-			for i, v in ipairs({ G.shop_jokers, G.shop_vouchers, G.shop_booster }) do
-				for ii, vv in ipairs(v.cards) do
-					vv:set_cost()
-				end
-			end
-		end
-	end
-	return g
+    local g = oldgameupdate(self, dt)
+    if G.shop and G.jokers and next(SMODS.find_card("Nxkoo_stocking_dealmaker")) then
+        cost_dt = cost_dt + dt
+        if cost_dt > 0.2 then
+            cost_dt = cost_dt - 0.2
+            for i, v in ipairs({ G.shop_jokers, G.shop_vouchers, G.shop_booster }) do
+                for ii, vv in ipairs(v.cards) do
+                    vv:set_cost()
+                end
+            end
+        end
+    end
+    return g
+end
+
+local oldgfuncsbuyfromshop = G.FUNCS.buy_from_shop
+function G.FUNCS.buy_from_shop(e, ...)
+    local c = e.config.ref_table
+    c.stocking_being_bought = true
+    G.E_MANAGER:add_event(Event {
+        blocking = false,
+        func = function ()
+            c.stocking_being_bought = nil
+        end
+    })
+    return oldgfuncsbuyfromshop(e, ...)
+end
+
+local oldgfuncsusecard = G.FUNCS.use_card
+function G.FUNCS.use_card(e, ...)
+    local c = e.config.ref_table
+    c.stocking_being_bought = true
+    G.E_MANAGER:add_event(Event {
+        blocking = false,
+        func = function ()
+            c.stocking_being_bought = nil
+        end
+    })
+    return oldgfuncsusecard(e, ...)
 end
 
 SMODS.Sound({
