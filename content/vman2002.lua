@@ -324,10 +324,8 @@ local mysterystar = StockingStuffer.Present({
 		local card
 		while i > 0 do
 			i = i - 1
-			card = pseudorandom_element(candidates, vman.randseed("star"))
-			for k,v in ipairs(candidates) do
-				if v == card then table.remove(candidates, k) end
-			end
+			card, k = pseudorandom_element(candidates, vman.randseed("star"))
+			table.remove(candidates, k)
 			card:set_edition("e_negative")
 		end
     end,
