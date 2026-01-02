@@ -20,7 +20,7 @@ local returnFalse = topuplib and topuplib.returnFalse or function() return false
 local whoami
 do
 	local wha = SMODS.load_mod_config(SMODS.Mods.Multiplayer)
-	whoami = wha and wha.username
+	whoami = wha and string.lower(wha.username)
 end
 
 -- Present Atlas Template
@@ -448,7 +448,7 @@ StockingStuffer.Present({
 				localize(card.ability.extra.readied == 0 and "vman_2002_plush_inactive" or "vman_2002_plush_active")
 			},
         }
-		if string.lower(whoami) == "drspectred" then
+		if whoami == "drspectred" then
 			result.key = "VMan_2002_stocking_pIush"
 		end
 		return result
